@@ -55,6 +55,38 @@ public class Interface {
 			}
 		}; 
 		
+		ActionListener addAmenityListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showAddAmenityPage();
+			}
+		}; 
+		
+		ActionListener removeListingListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showRemoveListingPage();
+			}
+		}; 
+		
+		ActionListener addListingOfferingListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showAddListingOfferingPage();
+			}
+		}; 
+		
+		ActionListener bookListingListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showBookListingPage(); 
+			}
+		}; 
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
@@ -77,6 +109,244 @@ public class Interface {
 	    JButton postListing = new JButton("Post a Listing");
 	    postListing.addActionListener(postListingListener); 
 	    panel.add(postListing); 
+	    
+	    JButton addAmenity = new JButton("Add amenity for your listing");
+	    addAmenity.addActionListener(addAmenityListener); 
+	    panel.add(addAmenity); 
+	    
+	    JButton removeListing = new JButton("remove your listing");
+	    removeListing.addActionListener(removeListingListener); 
+	    panel.add(removeListing); 
+	    
+	    JButton addListingOffering = new JButton("Add time and date available to rent for your listing");
+	    addListingOffering.addActionListener(addListingOfferingListener); 
+	    panel.add(addListingOffering); 
+	    
+	    JButton bookListing = new JButton("Book a listing");
+	    bookListing.addActionListener(bookListingListener); 
+	    panel.add(bookListing); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showBookListingPage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterSin = new JLabel("Enter SIN: "); 
+	    panel.add(enterSin); 
+	    TextField SIN = new TextField(50); 
+	    panel.add(SIN); 
+	    
+	    JLabel enterLid = new JLabel("Enter listing id: "); 
+	    panel.add(enterLid); 
+	    TextField lid = new TextField(50); 
+	    panel.add(lid); 
+	    
+	    JLabel enterOfferingDate = new JLabel("Enter date you want to book: "); 
+	    panel.add(enterOfferingDate); 
+	    TextField offeringDate = new TextField(50); 
+	    panel.add(offeringDate); 
+	    
+	    JLabel success = new JLabel("Fill out all the info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int result = 0;
+				try {
+					result = dao.bookListing(SIN.getText(), lid.getText(), offeringDate.getText());
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+				if(result == 0) {
+					success.setText("Successfully completed operation"); 
+				}else if(result == 1){
+					success.setText("Listing already bookde on the said date");  
+				}else if(result == 2) {
+					success.setText("No listing offering found on the said date");
+				}
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showAddListingOfferingPage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterSin = new JLabel("Enter SIN: "); 
+	    panel.add(enterSin); 
+	    TextField SIN = new TextField(50); 
+	    panel.add(SIN); 
+	    
+	    JLabel enterLid = new JLabel("Enter listing id: "); 
+	    panel.add(enterLid); 
+	    TextField lid = new TextField(50); 
+	    panel.add(lid); 
+	    
+	    JLabel enterOfferingDate = new JLabel("Enter the date your listing is available for rent: "); 
+	    panel.add(enterOfferingDate); 
+	    TextField offeringDate = new TextField(50); 
+	    panel.add(offeringDate); 
+	    
+	    JLabel enterPrice = new JLabel("Enter the price your listing is available to rent at the above date: "); 
+	    panel.add(enterPrice); 
+	    TextField price = new TextField(50); 
+	    panel.add(price); 
+	    
+	    JLabel success = new JLabel("Fill out all the info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int result = 0;
+				try {
+					result = dao.addListingOffering(SIN.getText(), lid.getText(), offeringDate.getText(), price.getText());
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+				if(result == 0) {
+					success.setText("Successfully completed operation"); 
+				}else {
+					success.setText("Unauthorized");  
+				} 
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+public static void showRemoveListingPage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterSin = new JLabel("Enter SIN: "); 
+	    panel.add(enterSin); 
+	    TextField SIN = new TextField(50); 
+	    panel.add(SIN); 
+	    
+	    JLabel enterLid = new JLabel("Enter listing id: "); 
+	    panel.add(enterLid); 
+	    TextField lid = new TextField(50); 
+	    panel.add(lid); 
+	    
+	    JLabel success = new JLabel("Fill out all the info on this form to add the amenity"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int result = 0;
+				try {
+					result = dao.removeListing(SIN.getText(), lid.getText());
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+				if(result == 0) {
+					success.setText("Successfully completed operation"); 
+				}else {
+					success.setText("Unauthorized");  
+				} 
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+public static void showAddAmenityPage() {
+		 
+		
+		JFrame frame = new JFrame("deleteUser");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterSin = new JLabel("Enter SIN: "); 
+	    panel.add(enterSin); 
+	    TextField SIN = new TextField(50); 
+	    panel.add(SIN); 
+	    
+	    JLabel enterLid = new JLabel("Enter listing id: "); 
+	    panel.add(enterLid); 
+	    TextField lid = new TextField(50); 
+	    panel.add(lid); 
+	    
+	    JLabel enterAmenityDescription = new JLabel("Enter Amenity Description: "); 
+	    panel.add(enterAmenityDescription); 
+	    TextField amenityDescription = new TextField(50); 
+	    panel.add(amenityDescription); 
+	    
+	    JLabel success = new JLabel("Fill out all the info on this form to add the amenity"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int result = 0;
+				try {
+					result = dao.addAmenity(SIN.getText(), lid.getText(), amenityDescription.getText());
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+				if(result == 0) {
+					success.setText("Successfully added amenity"); 
+				}else {
+					success.setText("Unauthorized");  
+				} 
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
 	    
 	    frame.setVisible(true);
 	    
@@ -102,7 +372,7 @@ public class Interface {
 	    TextField type = new TextField(50); 
 	    panel.add(type); 
 	    
-	    JLabel enterCity = new JLabel("Enter the Address: "); 
+	    JLabel enterCity = new JLabel("Enter the City: "); 
 	    panel.add(enterCity); 
 	    TextField city = new TextField(50); 
 	    panel.add(city); 
@@ -116,6 +386,11 @@ public class Interface {
 	    panel.add(enterPostalCode); 
 	    TextField postalCode = new TextField(50); 
 	    panel.add(postalCode); 
+	    
+	    JLabel enterApartmentSuite = new JLabel("Enter the apartment/suite number: "); 
+	    panel.add(enterApartmentSuite); 
+	    TextField apartmentSuite = new TextField(50); 
+	    panel.add(apartmentSuite); 
 	    
 	    JLabel enterLatitude = new JLabel("Enter the Latitude: "); 
 	    panel.add(enterLatitude); 
@@ -137,13 +412,13 @@ public class Interface {
 			public void actionPerformed(ActionEvent e) {
 				boolean result = false;
 				try {
-					result = dao.postListing(SIN.getText(), type.getText(), city.getText(), country.getText(), postalCode.getText(), latitude.getText(), longitude.getText());
+					result = dao.postListing(SIN.getText(), type.getText(), city.getText(), country.getText(), postalCode.getText(), apartmentSuite.getText(), latitude.getText(), longitude.getText());
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				} 
 				if(result) {
-					success.setText("Successfully Deleted User"); 
+					success.setText("Successfully added Listing"); 
 				}else {
 					success.setText("Operation Not Successful");  
 				} 
@@ -259,6 +534,11 @@ public class Interface {
 	    TextField country = new TextField(6); 
 	    panel.add(country); 
 	    
+	    JLabel enterApartmentSuite = new JLabel("Enter apartment/suite number: "); 
+	    panel.add(enterApartmentSuite); 
+	    TextField apartmentSuite = new TextField(6); 
+	    panel.add(apartmentSuite); 
+	    
 	    JLabel success = new JLabel("Fill out all the info on this form to add the user"); 
 	    panel.add(success); 
 	    
@@ -268,7 +548,7 @@ public class Interface {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					boolean result = dao.postUser(SIN.getText(), occupation.getText(), username.getText(), password.getText(), birthday.getText(), 
-							type.getText(), cardNumber.getText(), city.getText(), country.getText(), postalCode.getText());
+							type.getText(), cardNumber.getText(), city.getText(), country.getText(), postalCode.getText(), apartmentSuite.getText());
 					if(result) {
 						success.setText("Successfully Added User"); 
 					}else {
@@ -342,6 +622,11 @@ public class Interface {
 	    TextField country = new TextField(6); 
 	    panel.add(country); 
 	    
+	    JLabel enterApartmentSuite = new JLabel("Enter apartment/suite number: "); 
+	    panel.add(enterApartmentSuite); 
+	    TextField apartmentSuite = new TextField(6); 
+	    panel.add(apartmentSuite); 
+	    
 	    JLabel success = new JLabel("Fill out all the info on this form to add the user"); 
 	    panel.add(success); 
 	    
@@ -351,7 +636,7 @@ public class Interface {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					boolean result = dao.postUser(SIN.getText(), occupation.getText(), username.getText(), password.getText(), birthday.getText(), 
-							city.getText(), country.getText(), postalCode.getText());
+							city.getText(), country.getText(), postalCode.getText(), apartmentSuite.getText());
 					if(result) {
 						success.setText("Successfully Added User"); 
 					}else {
