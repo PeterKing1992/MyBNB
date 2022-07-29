@@ -538,5 +538,22 @@ public class MySqlDAO {
 		return 0;
 	}
 
+	public int renterCommentOnListing(String SIN, String lid, String rating, String content) throws SQLException {
+		String query = "SELECT * FROM renterBookBooking natural join booking natural join bookingAssociatedWithOffering "
+				+ "WHERE bid NOT IN (SELECT bid from renterCancelBooking) AND bid NOT IN (SELECT bid FROM hostCancelBooking) "
+				+ "AND SIN='%s' AND DATEDIFF(offeringDate, CURDATE())>(-2000) AND DATEDIFF(offeringDate, CURDATE())<0 AND lid=%s; "; 
+		query = query.format(query, SIN, lid); 
+		ResultSet rs = this.st.executeQuery(query); 
+		if(!rs.next()) {
+			return 1; 
+		}
+		
+		query = "INSERT INTO renterCommentOnListing(rating, content, commentDate, renter, lid) VALUES(%s, '%s', DATE(NOW()), '%s', %s); "; 
+		query = query.format(query, rating, content, SIN, lid); 
+		this.st.execute(query); 
+		
+		return 0;
+	}
+
     
 }
