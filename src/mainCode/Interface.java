@@ -119,6 +119,22 @@ public class Interface {
 			}
 		};
 		
+		ActionListener renterCommentOnHostListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showRenterCommentOnHostPage(); 
+			}
+		};
+		
+		ActionListener hostCommentOnRenterListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showHostCommentOnRenterPage(); 
+			}
+		};
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
@@ -174,12 +190,140 @@ public class Interface {
 	    changeListingPrice.addActionListener(changeListingPriceListener); 
 	    panel.add(changeListingPrice); 
 	    
+	    JButton renterCommentOnHost = new JButton("Comment on a Host as a renter");
+	    renterCommentOnHost.addActionListener(renterCommentOnHostListener); 
+	    panel.add(renterCommentOnHost); 
+	    
+	    JButton hostCommentOnRenter = new JButton("Comment on a renter as a Host");
+	    hostCommentOnRenter.addActionListener(hostCommentOnRenterListener); 
+	    panel.add(hostCommentOnRenter); 
+	    
 	    frame.setVisible(true);
 	    
 	    
 	}
 	
-public static void showChangeListingPricePage() {
+public static void showHostCommentOnRenterPage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterHostSin = new JLabel("Enter the your SIN: "); 
+	    panel.add(enterHostSin); 
+	    TextField host = new TextField(50); 
+	    panel.add(host); 
+	    
+	    JLabel enterRenterSin = new JLabel("Enter the SIN of the renter you want to comment on: "); 
+	    panel.add(enterRenterSin); 
+	    TextField renter = new TextField(50); 
+	    panel.add(renter); 
+	    
+	    JLabel enterRating = new JLabel("Enter Your rating on this renter: "); 
+	    panel.add(enterRating); 
+	    TextField rating = new TextField(50); 
+	    panel.add(rating); 
+	    
+	    JLabel enterContent = new JLabel("Enter Your comment on this renter: "); 
+	    panel.add(enterContent); 
+	    TextField comment = new TextField(2000); 
+	    panel.add(comment); 
+	    
+	    JLabel success = new JLabel("Fill out all the info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int result = 0;
+				try {
+					result = dao.hostCommentOnRenter(renter.getText(), host.getText(), rating.getText(), comment.getText()); 
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+				if(result == 0) {
+					success.setText("Successfully completed operation"); 
+				}else if(result == 1){
+					success.setText("Unauthorized, renter has not completed a stay at your listing recently");  
+				}
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showRenterCommentOnHostPage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterRenterSin = new JLabel("Enter Your SIN: "); 
+	    panel.add(enterRenterSin); 
+	    TextField renter = new TextField(50); 
+	    panel.add(renter); 
+	    
+	    JLabel enterHostSin = new JLabel("Enter the SIN of the host you want to comment on: "); 
+	    panel.add(enterHostSin); 
+	    TextField host = new TextField(50); 
+	    panel.add(host); 
+	    
+	    JLabel enterRating = new JLabel("Enter Your rating on this host: "); 
+	    panel.add(enterRating); 
+	    TextField rating = new TextField(50); 
+	    panel.add(rating); 
+	    
+	    JLabel enterContent = new JLabel("Enter Your comment on this host: "); 
+	    panel.add(enterContent); 
+	    TextField comment = new TextField(2000); 
+	    panel.add(comment); 
+	    
+	    JLabel success = new JLabel("Fill out all the info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int result = 0;
+				try {
+					result = dao.renterCommentOnHost(renter.getText(), host.getText(), rating.getText(), comment.getText()); 
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+				if(result == 0) {
+					success.setText("Successfully completed operation"); 
+				}else if(result == 1){
+					success.setText("Unauthorized, you have not stayed in this host's listing recently");  
+				}
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showChangeListingPricePage() {
 		 
 		
 		JFrame frame = new JFrame("new operation");

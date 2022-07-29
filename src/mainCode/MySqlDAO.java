@@ -209,6 +209,26 @@ public class MySqlDAO {
     			+ "PRIMARY KEY(bid)); "; 
     	this.st.execute(query); 
     	
+    	query = "CREATE TABLE IF NOT EXISTS renterCommentOnHost(commentId INT AUTO_INCREMENT PRIMARY KEY, renter char(9) NOT NULL, host char(9) NOT NULL, commentDate date NOT NULL, "
+    			+ "rating DOUBLE NOT NULL, content TEXT NOT NULL, "
+    			+ "FOREIGN KEY(renter) REFERENCES renter(SIN) ON DELETE CASCADE, "
+    			+ "FOREIGN KEY(host) REFERENCES host(SIN) ON DELETE CASCADE "
+    			+ "); "; 
+    	this.st.execute(query); 
+    	
+    	query = "CREATE TABLE IF NOT EXISTS hostCommentOnRenter(commentId INT AUTO_INCREMENT PRIMARY KEY, host char(9) NOT NULL, renter char(9) NOT NULL, commentDate DATE NOT NULL, "
+    			+ "rating DOUBLE NOT NULL, content TEXT NOT NULL, "
+    			+ "FOREIGN KEY(renter) REFERENCES renter(SIN) ON DELETE CASCADE, "
+    			+ "FOREIGN KEY(host) REFERENCES host(SIN) ON DELETE CASCADE "
+    			+ "); "; 
+    	this.st.execute(query); 
+    	
+    	query = "CREATE TABLE IF NOT EXISTS renterCommentOnListing(commentId INT AUTO_INCREMENT primary key, renter char(9) NOT NULL, lid INT NOT NULL, commentDate DATE NOT NULL, "
+    			+ "rating DOUBLE NOT NULL, content TEXT NOT NULL, "
+    			+ "FOREIGN KEY(renter) REFERENCES renter(SIN) ON DELETE CASCADE, "
+    			+ "FOREIGN KEY(lid) REFERENCES listing(lid) ON DELETE CASCADE ); "; 
+    	this.st.execute(query); 
+    	
     	System.out.println("Created Database");
     }
 
@@ -482,6 +502,39 @@ public class MySqlDAO {
 		query += "'%Y-%m-%d'); "; 
 		this.st.execute(query); 
 		
+		return 0;
+	}
+
+	public int renterCommentOnHost(String renter, String host, String rating, String content) throws SQLException {
+		String query = "SELECT * FROM renterBookBooking natural join booking natural join bookingAssociatedWithOffering "
+				+ "WHERE bid NOT IN (SELECT bid from renterCancelBooking) AND bid NOT IN (SELECT bid FROM hostCancelBooking) "
+				+ "AND SIN='%s' AND DATEDIFF(offeringDate, CURDATE())>(-2000) AND DATEDIFF(offeringDate, CURDATE())<0 AND lid IN(SELECT lid FROM hostPostListing WHERE SIN='%s'); "; 
+		query = query.format(query, renter, host); 
+		ResultSet rs = this.st.executeQuery(query); 
+		if(!rs.next()) {
+			return 1; 
+		}
+		
+		query = "INSERT INTO renterCommentOnHost(rating, content, commentDate, renter, host) VALUES(%s, '%s', DATE(NOW()), '%s', '%s'); "; 
+		query = query.format(query, rating, content, renter, host); 
+		this.st.execute(query); 
+		
+		return 0;
+	}
+
+	public int hostCommentOnRenter(String renter, String host, String rating, String content) throws SQLException {
+		String query = "SELECT * FROM renterBookBooking natural join booking natural join bookingAssociatedWithOffering "
+				+ "WHERE bid NOT IN (SELECT bid from renterCancelBooking) AND bid NOT IN (SELECT bid FROM hostCancelBooking) "
+				+ "AND SIN='%s' AND DATEDIFF(offeringDate, CURDATE())>(-2000) AND DATEDIFF(offeringDate, CURDATE())<0 AND lid IN(SELECT lid FROM hostPostListing WHERE SIN='%s'); "; 
+		query = query.format(query, renter, host); 
+		ResultSet rs = this.st.executeQuery(query); 
+		if(!rs.next()) {
+			return 1; 
+		}
+		
+		query = "INSERT INTO hostCommentOnRenter(rating, content, commentDate, renter, host) VALUES(%s, '%s', DATE(NOW()), '%s', '%s'); "; 
+		query = query.format(query, rating, content, renter, host); 
+		this.st.execute(query); 
 		return 0;
 	}
 
