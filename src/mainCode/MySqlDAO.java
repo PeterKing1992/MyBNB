@@ -36,6 +36,19 @@ public class MySqlDAO {
 		}
 		return false; 
 	}
+	
+	public boolean isBeforeToday(String dateToCheck) {
+//		java.util.Date date=new SimpleDateFormat("yyyy-mm-dd").parse(bday);
+		java.util.Date UtilToday = new Date(System.currentTimeMillis()); 
+
+		Date date = Date.valueOf(dateToCheck); 
+		Date today = new java.sql.Date(UtilToday.getTime()); 
+		
+		
+		long days = today.getTime() - date.getTime(); 
+		if(days > 0) return true; 
+		return false; 
+	}
 
 	//DROP database cscc43_project; CREATE database cscc43_project; 
 	//GRANT select, create, alter, drop, references on cscc43_project.* to 'user'@'localhost';
@@ -164,7 +177,7 @@ public class MySqlDAO {
     			+ "PRIMARY KEY(amenityId)); "; 
     	this.st.execute(query); 
     	
-    	query = "CREATE TABLE IF NOT EXISTS listingOffering(lid INT, offeringDate date, price double NOT NULL, "
+    	query = "CREATE TABLE IF NOT EXISTS listingOffering(lid INT, offeringDate date, price double NOT NULL, isAvailable boolean NOT NULL DEFAULT true, "
     			+ "FOREIGN KEY(lid) REFERENCES listing(lid) ON DELETE CASCADE, "
     			+ "PRIMARY KEY(lid, offeringDate)); "; 
     	this.st.execute(query); 
@@ -294,10 +307,19 @@ public class MySqlDAO {
 		query = query.format(query, lid);  
 		this.st.execute(query);
 		
+		query = "DELETE FROM booking WHERE bid IN (select bid from bookingAssociatedWithOffering WHERE lid=%s); "; 
+		query = query.format(query, lid);  
+		this.st.execute(query);
+		
+		query = "DELETE FROM listingOffering WHERE lid=%s "; 
+		query = query.format(query, lid);  
+		this.st.execute(query);
+		
 		return 0;
 	}
 
 	public int addListingOffering(String SIN, String lid, String offeringDate, String price) throws SQLException {
+		if(isBeforeToday(offeringDate)) return -1; 
 		String query = "select * from hostPostListing WHERE SIN='%s' AND lid=%s; "; 
 		query = query.format(query, SIN, lid);  
 		ResultSet rs = this.st.executeQuery(query); 
@@ -313,6 +335,7 @@ public class MySqlDAO {
 	}
 
 	public int bookListing(String SIN, String lid, String offeringDate) throws SQLException {
+		if(isBeforeToday(offeringDate)) return -1; 
 		String query = "select * from bookingAssociatedWithOffering WHERE lid=%s AND offeringDate=STR_TO_DATE('%s', "; 
 		query = query.format(query, lid, offeringDate);  
 		query += "'%Y-%m-%d') AND bid NOT IN (select bid from renterCancelBooking) AND bid NOT IN (select bid from hostCancelBooking); "; 
@@ -343,6 +366,121 @@ public class MySqlDAO {
 		query = query.format(query, lid, offeringDate); 
 		query += "'%Y-%m-%d'));"; 
 		this.st.execute(query);
+
+		query = "UPDATE listingOffering SET isAvailable=false WHERE lid=%s AND offeringDate=STR_TO_DATE('%s', "; 
+		query = query.format(query, lid, offeringDate);  
+		query += "'%Y-%m-%d'); "; 
+		this.st.execute(query);
+		
+		return 0;
+	}
+
+	public int cancelBooking(String SIN, String bid) throws SQLException {
+		String query = "SELECT * FROM renterBookBooking WHERE SIN='%s' AND bid=%s; "; 
+		query = query.format(query, SIN, bid); 
+		ResultSet rs = this.st.executeQuery(query); 
+		if(!rs.next()) {
+			return 1; 
+		}
+		
+		String date = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+		query = "INSERT INTO renterCancelBooking(SIN, bid, cancelDate) VALUES('%s', %s, STR_TO_DATE('%s', "; 
+		query = query.format(query, SIN, bid, date); 
+		query += "'%Y-%m-%d'));"; 
+		this.st.execute(query); 
+		
+		query = "UPDATE listingOffering SET isAvailable=true WHERE (lid, offeringDate) IN (SELECT lid, offeringDate from bookingAssociatedWithOffering WHERE bid=%s); "; 
+		query = query.format(query, bid); 
+		this.st.execute(query); 
+		
+		return 0;
+	}
+
+	public int cancelBookingHost(String SIN, String bid) throws SQLException {
+		String query = "SELECT * from hostPostListing where SIN='%s' AND lid IN (select lid from bookingAssociatedWithOffering where bid=%s); "; 
+		query = query.format(query, SIN, bid); 
+		ResultSet rs = this.st.executeQuery(query); 
+		if(!rs.next()) {
+			return 1; 
+		}
+		
+		String date = new SimpleDateFormat("yyyy-MM-dd").format(new java.util.Date());
+		query = "INSERT INTO hostCancelBooking(SIN, bid, cancelDate) VALUES('%s', %s, STR_TO_DATE('%s', "; 
+		query = query.format(query, SIN, bid, date); 
+		query += "'%Y-%m-%d'));"; 
+		this.st.execute(query); 
+		
+		query = "UPDATE listingOffering SET isAvailable=true WHERE (lid, offeringDate) IN (SELECT lid, offeringDate from bookingAssociatedWithOffering WHERE bid=%s); "; 
+		query = query.format(query, bid); 
+		this.st.execute(query); 
+		
+		return 0;
+	}
+
+	public int changeListingAvailability(String SIN, String lid, String offeringDate, String available) throws SQLException {
+		if(isBeforeToday(offeringDate)) return -1; 
+		String query = "SELECT * from hostPostListing where SIN = '%s' AND lid=%s ; "; 
+		query = query.format(query, SIN, lid); 
+		ResultSet rs = this.st.executeQuery(query); 
+		if(!rs.next()) {
+			return 1; 
+		}
+		
+		query = "SELECT bid from bookingAssociatedWithOffering WHERE bid NOT IN(select bid from renterCancelBooking) AND bid NOT IN(select bid from hostCancelBooking) "
+				+ "AND lid=%s AND offeringDate=STR_TO_DATE('%s', "; 
+		query = query.format(query, lid, offeringDate); 
+		query += "'%Y-%m-%d'); "; 
+		rs = this.st.executeQuery(query); 
+		if(rs.next()) {
+			return 2; 
+		}
+		
+		query = "SELECT * from listingOffering where lid=%s AND offeringDate=STR_TO_DATE('%s', "; 
+		query = query.format(query, lid, offeringDate); 
+		query += "'%Y-%m-%d'); "; 
+		rs = this.st.executeQuery(query); 
+		if(!rs.next()) {
+			return 3; 
+		}
+		
+		query = "UPDATE listingOffering SET isAvailable=%s WHERE lid=%s AND offeringDate=STR_TO_DATE('%s', "; 
+		query = query.format(query, available, lid, offeringDate); 
+		query += "'%Y-%m-%d'); "; 
+		this.st.execute(query); 
+		
+		return 0;
+	}
+
+	public int changeListingPrice(String SIN, String lid, String offeringDate, String price) throws SQLException {
+		if(isBeforeToday(offeringDate)) return -1; 
+		String query = "SELECT * from hostPostListing where SIN = '%s' AND lid=%s ; "; 
+		query = query.format(query, SIN, lid); 
+		ResultSet rs = this.st.executeQuery(query); 
+		if(!rs.next()) {
+			return 1; 
+		}
+		
+		query = "SELECT bid from bookingAssociatedWithOffering WHERE bid NOT IN(select bid from renterCancelBooking) AND bid NOT IN(select bid from hostCancelBooking) "
+				+ "AND lid=%s AND offeringDate=STR_TO_DATE('%s', "; 
+		query = query.format(query, lid, offeringDate); 
+		query += "'%Y-%m-%d'); "; 
+		rs = this.st.executeQuery(query); 
+		if(rs.next()) {
+			return 2; 
+		}
+		
+		query = "SELECT * from listingOffering where lid=%s AND offeringDate=STR_TO_DATE('%s', "; 
+		query = query.format(query, lid, offeringDate); 
+		query += "'%Y-%m-%d'); "; 
+		rs = this.st.executeQuery(query); 
+		if(!rs.next()) {
+			return 3; 
+		}
+		
+		query = "UPDATE listingOffering SET price=%s WHERE lid=%s AND offeringDate=STR_TO_DATE('%s', "; 
+		query = query.format(query, price, lid, offeringDate); 
+		query += "'%Y-%m-%d'); "; 
+		this.st.execute(query); 
 		
 		return 0;
 	}

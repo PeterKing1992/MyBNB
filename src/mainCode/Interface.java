@@ -87,6 +87,38 @@ public class Interface {
 			}
 		}; 
 		
+		ActionListener cancelBookingRenterListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showCancelBookingRenterPage(); 
+			}
+		};
+		
+		ActionListener cancelBookingHostListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showCancelBookingHostPage(); 
+			}
+		};
+		
+		ActionListener changeListingAvailabilityListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showChangeListingAvailabilityPage(); 
+			}
+		};
+		
+		ActionListener changeListingPriceListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showChangeListingPricePage(); 
+			}
+		};
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
@@ -125,6 +157,250 @@ public class Interface {
 	    JButton bookListing = new JButton("Book a listing");
 	    bookListing.addActionListener(bookListingListener); 
 	    panel.add(bookListing); 
+	    
+	    JButton cancelBookingRenter = new JButton("Cancel a booking as a renter");
+	    cancelBookingRenter.addActionListener(cancelBookingRenterListener); 
+	    panel.add(cancelBookingRenter); 
+	    
+	    JButton cancelBookingHost = new JButton("Cancel a booking as a host");
+	    cancelBookingHost.addActionListener(cancelBookingHostListener); 
+	    panel.add(cancelBookingHost); 
+	    
+	    JButton changeListingAvailability = new JButton("Change Listing Availability");
+	    changeListingAvailability.addActionListener(changeListingAvailabilityListener); 
+	    panel.add(changeListingAvailability); 
+	    
+	    JButton changeListingPrice = new JButton("Change Listing Price");
+	    changeListingPrice.addActionListener(changeListingPriceListener); 
+	    panel.add(changeListingPrice); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+public static void showChangeListingPricePage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterSin = new JLabel("Enter SIN: "); 
+	    panel.add(enterSin); 
+	    TextField SIN = new TextField(50); 
+	    panel.add(SIN); 
+	    
+	    JLabel enterLid = new JLabel("Enter Listing id of the listing you want to change: "); 
+	    panel.add(enterLid); 
+	    TextField lid = new TextField(50); 
+	    panel.add(lid); 
+	    
+	    JLabel enterDate = new JLabel("Enter the date of the listing above you want to change the availability for(In format \"YYYY-MM-DD\"): "); 
+	    panel.add(enterDate); 
+	    TextField offeringDate = new TextField(50); 
+	    panel.add(offeringDate); 
+	    
+	    JLabel enterPrice = new JLabel("Enter the price you want to change the listing on the said date to: "); 
+	    panel.add(enterPrice); 
+	    TextField price = new TextField(50); 
+	    panel.add(price); 
+	    
+	    JLabel success = new JLabel("Fill out all the info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int result = 0;
+				try {
+					result = dao.changeListingPrice(SIN.getText(), lid.getText(), offeringDate.getText(), price.getText()); 
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+				if(result == 0) {
+					success.setText("Successfully completed operation"); 
+				}else if(result == 1){
+					success.setText("Unauthorized");  
+				}else if(result == 2) {
+					success.setText("You may not change the price since someone booked the listing on the said date, please cancel that booking first");
+				}else {
+					success.setText("listing offering not found on the said date");
+				}
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showChangeListingAvailabilityPage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterSin = new JLabel("Enter SIN: "); 
+	    panel.add(enterSin); 
+	    TextField SIN = new TextField(50); 
+	    panel.add(SIN); 
+	    
+	    JLabel enterLid = new JLabel("Enter Listing id of the listing you want to change: "); 
+	    panel.add(enterLid); 
+	    TextField lid = new TextField(50); 
+	    panel.add(lid); 
+	    
+	    JLabel enterDate = new JLabel("Enter the date of the listing above you want to change the availability for(In format \"YYYY-MM-DD\"): "); 
+	    panel.add(enterDate); 
+	    TextField offeringDate = new TextField(50); 
+	    panel.add(offeringDate); 
+	    
+	    JLabel enterAvailability = new JLabel("Enter true if you want this listing to be available on the said date, or false if you do not want it to be available: "); 
+	    panel.add(enterAvailability); 
+	    TextField availability = new TextField(50); 
+	    panel.add(availability); 
+	    
+	    JLabel success = new JLabel("Fill out all the info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int result = 0;
+				try {
+					result = dao.changeListingAvailability(SIN.getText(), lid.getText(), offeringDate.getText(), availability.getText()); 
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+				if(result == 0) {
+					success.setText("Successfully completed operation"); 
+				}else if(result == 1){
+					success.setText("Unauthorized");  
+				}else if(result == 3) {
+					success.setText("No lisitng offering found for the said listing on the said date");
+				}else {
+					success.setText("You may not change the availability because someone booked this listing on the said date, please cancel that booking first");
+				}
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showCancelBookingHostPage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterSin = new JLabel("Enter SIN: "); 
+	    panel.add(enterSin); 
+	    TextField SIN = new TextField(50); 
+	    panel.add(SIN); 
+	    
+	    JLabel enterBid = new JLabel("Enter the bid of the booking you want to cancel: "); 
+	    panel.add(enterBid); 
+	    TextField bid = new TextField(50); 
+	    panel.add(bid); 
+	    
+	    JLabel success = new JLabel("Fill out all the info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int result = 0;
+				try {
+					result = dao.cancelBookingHost(SIN.getText(), bid.getText());
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+				if(result == 0) {
+					success.setText("Successfully completed operation"); 
+				}else if(result == 1){
+					success.setText("Unauthorized");  
+				}
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showCancelBookingRenterPage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterSin = new JLabel("Enter SIN: "); 
+	    panel.add(enterSin); 
+	    TextField SIN = new TextField(50); 
+	    panel.add(SIN); 
+	    
+	    JLabel enterBid = new JLabel("Enter the bid of the booking you want to cancel: "); 
+	    panel.add(enterBid); 
+	    TextField bid = new TextField(50); 
+	    panel.add(bid); 
+	    
+	    JLabel success = new JLabel("Fill out all the info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int result = 0;
+				try {
+					result = dao.cancelBooking(SIN.getText(), bid.getText());
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+				if(result == 0) {
+					success.setText("Successfully completed operation"); 
+				}else if(result == 1){
+					success.setText("Unauthorized");  
+				}
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
 	    
 	    frame.setVisible(true);
 	    
@@ -175,6 +451,8 @@ public class Interface {
 					success.setText("Listing already bookde on the said date");  
 				}else if(result == 2) {
 					success.setText("No listing offering found on the said date");
+				}else if(result == -1) {
+					success.setText("Cannot have date before today");
 				}
 			}
 		};
@@ -233,7 +511,9 @@ public class Interface {
 				} 
 				if(result == 0) {
 					success.setText("Successfully completed operation"); 
-				}else {
+				}else if(result == -1) {
+					success.setText("Cannot have date before today");
+				}else{
 					success.setText("Unauthorized");  
 				} 
 			}
@@ -283,6 +563,8 @@ public static void showRemoveListingPage() {
 				} 
 				if(result == 0) {
 					success.setText("Successfully completed operation"); 
+				}else if(result == -1) {
+					success.setText("Cannot have date before today");
 				}else {
 					success.setText("Unauthorized");  
 				} 
