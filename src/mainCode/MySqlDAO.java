@@ -55,7 +55,7 @@ public class MySqlDAO {
 	
 	// *** implement database operations here *** //
 
-    public boolean postUser(String sin, String occupation, String uname, String password, String bday, String city, String country, String postalCode, String apartmentSuite) throws SQLException, ParseException {
+    public boolean postUser(String sin, String occupation, String uname, String password, String bday, String city, String country, String postalCode, String street, String province, String apartmentSuite) throws SQLException, ParseException {
         if(!isAdult(bday)) return false; 
     	
     	String query = "INSERT INTO user(SIN, uoccupation, uname, password, birthday) VALUES('%s', '%s', '%s', '%s', STR_TO_DATE('%s', "; 
@@ -66,18 +66,18 @@ public class MySqlDAO {
        	query = query.format(query, sin); 
        	this.st.execute(query); 
        	
-       	query = "INSERT INTO address(postalCode, city, country, apartmentSuite) VALUES('%s', '%s', '%s', %s); "; 
-       	query = query.format(query, postalCode, city, country, apartmentSuite); 
+       	query = "INSERT INTO address(postalCode, street, province, city, country, apartmentSuite) VALUES('%s', '%s', '%s', '%s', '%s', %s); "; 
+       	query = query.format(query, postalCode, street, province, city, country, apartmentSuite); 
        	this.st.execute(query); 
        	
-       	query = "INSERT INTO userHasAddress(SIN, postalCode, city, country, apartmentSuite) VALUES('%s', '%s', '%s', '%s', %s); "; 
-       	query = query.format(query, sin, postalCode, city, country, apartmentSuite); 
+       	query = "INSERT INTO userHasAddress(SIN, postalCode, street, province, city, country, apartmentSuite) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %s); "; 
+       	query = query.format(query, sin, postalCode, street, province, city, country, apartmentSuite); 
        	this.st.execute(query); 
        	
        	return true; 
     }
     
-    public boolean postUser(String sin, String occupation, String uname, String password, String bday, String paymentType, String cardNumber, String city, String country, String postalCode, String apartmentSuite) throws SQLException, ParseException {
+    public boolean postUser(String sin, String occupation, String uname, String password, String bday, String paymentType, String cardNumber, String city, String country, String postalCode, String street, String province, String apartmentSuite) throws SQLException, ParseException {
         if(!isAdult(bday)) return false; 
     	
     	String query = "INSERT INTO user(SIN, uoccupation, uname, password, birthday) VALUES('%s', '%s', '%s', '%s', STR_TO_DATE('%s', "; 
@@ -96,12 +96,12 @@ public class MySqlDAO {
        	query = query.format(query,sin, paymentType, cardNumber); 
        	this.st.execute(query); 
        	
-       	query = "INSERT INTO address(postalCode, city, country, apartmentSuite) VALUES('%s', '%s', '%s', %s); "; 
-       	query = query.format(query, postalCode, city, country, apartmentSuite); 
+       	query = "INSERT INTO address(postalCode, street, province, city, country, apartmentSuite) VALUES('%s', '%s', '%s', '%s', '%s', %s); "; 
+       	query = query.format(query, postalCode, street, province, city, country, apartmentSuite); 
        	this.st.execute(query); 
        	
-       	query = "INSERT INTO userHasAddress(SIN, postalCode, city, country, apartmentSuite) VALUES('%s', '%s', '%s', '%s', %s); "; 
-       	query = query.format(query, sin, postalCode, city, country, apartmentSuite); 
+       	query = "INSERT INTO userHasAddress(SIN, postalCode, street, province, city, country, apartmentSuite) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %s); "; 
+       	query = query.format(query, sin, postalCode, street, province, city, country, apartmentSuite); 
        	this.st.execute(query); 
        	
        	return true; 
@@ -132,13 +132,13 @@ public class MySqlDAO {
     			+ "PRIMARY KEY(type, cardNumber, SIN)); "; 
     	this.st.execute(query); 
     	
-    	query = "CREATE TABLE IF NOT EXISTS address(postalCode char(6), city varchar(50), country varchar(50), apartmentSuite INT, street varchar(50), "
-    			+ "PRIMARY KEY(postalCode, city, country, apartmentSuite), UNIQUE(street, apartmentSuite, city, country)); "; 
+    	query = "CREATE TABLE IF NOT EXISTS address(postalCode char(6), street varchar(50), province varchar(50), city varchar(50), country varchar(50), apartmentSuite INT, "
+    			+ "PRIMARY KEY(postalCode, street, province, city, country, apartmentSuite)); "; 
     	this.st.execute(query); 
     	
-    	query = "CREATE TABLE IF NOT EXISTS userHasAddress(SIN char(9) PRIMARY KEY, postalCode char(6) NOT NULL, city varchar(50) NOT NULL, country varchar(50) NOT NULL, apartmentSuite INT, "
-    			+ "FOREIGN KEY(postalCode, city, country, apartmentSuite) REFERENCES address(postalCode, city, country, apartmentSuite) ON DELETE CASCADE, "
-    			+ "UNIQUE(postalCode, city, country), "
+    	query = "CREATE TABLE IF NOT EXISTS userHasAddress(SIN char(9) PRIMARY KEY, postalCode char(6) NOT NULL, street varchar(50) NOT NULL, province varchar(50) not null, city varchar(50) NOT NULL, country varchar(50) NOT NULL, apartmentSuite INT, "
+    			+ "FOREIGN KEY(postalCode, street, province, city, country, apartmentSuite) REFERENCES address(postalCode, street, province, city, country, apartmentSuite) ON DELETE CASCADE, "
+    			+ "UNIQUE(postalCode, street, province, city, country), "
     			+ "FOREIGN KEY(SIN) REFERENCES user(SIN) ON DELETE CASCADE); "; 
     	this.st.execute(query); 
     	
@@ -151,9 +151,9 @@ public class MySqlDAO {
     			+ "PRIMARY KEY(lid)); "; 
     	this.st.execute(query); 
     	
-    	query = "CREATE TABLE IF NOT EXISTS listingHasAddress(lid INT, city varchar(50), country varchar(50), postalCode char(6), apartmentSuite INT, "
+    	query = "CREATE TABLE IF NOT EXISTS listingHasAddress(lid INT, city varchar(50), country varchar(50), postalCode char(6), street varchar(50), province varchar(50), apartmentSuite INT, "
     			+ "FOREIGN KEY(lid) REFERENCES listing(lid) ON DELETE CASCADE, "
-    			+ "FOREIGN KEY(postalCode, city, country, apartmentSuite) REFERENCES address(postalCode, city, country, apartmentSuite) ON DELETE CASCADE, "
+    			+ "FOREIGN KEY(postalCode, street, province, city, country, apartmentSuite) REFERENCES address(postalCode, street, province, city, country, apartmentSuite) ON DELETE CASCADE, "
     			+ "PRIMARY KEY(lid)); "; 
     	this.st.execute(query); 
     	
@@ -244,7 +244,7 @@ public class MySqlDAO {
 			query = "DELETE FROM booking WHERE (bid) IN (select bid from renterBookBooking WHERE SIN = '%s'); "; 
 			query = query.format(query, sin);
 			
-			query = "DELETE FROM address WHERE (postalCode, city, country, apartmentSuite) IN (select postalCode, city, country, apartmentSuite "
+			query = "DELETE FROM address WHERE (postalCode, street, province, city, country, apartmentSuite) IN (select postalCode, street, province, city, country, apartmentSuite "
 					+ "from userHasAddress WHERE SIN = '%s'); "; 
 			query = query.format(query, sin);
 			
@@ -259,7 +259,7 @@ public class MySqlDAO {
 		return true;
 	}
 
-	public boolean postListing(String SIN, String type, String city, String country, String postalCode, String apartmentSuite, String latitude, String longitude) throws SQLException {
+	public boolean postListing(String SIN, String type, String city, String country, String postalCode, String street, String province, String apartmentSuite, String latitude, String longitude) throws SQLException {
 		String query = "INSERT INTO listing(ltype) VALUES('%s'); "; 
 		query = query.format(query, type); 
 		this.st.execute(query); 
@@ -270,12 +270,12 @@ public class MySqlDAO {
 		query += "'%Y-%m-%d'));"; 
 		this.st.execute(query); 
 		
-		query = "INSERT INTO address(postalCode, city, country, apartmentSuite) VALUEs('%s', '%s', '%s', %s); "; 
-		query = query.format(query, postalCode, city, country, apartmentSuite); 
+		query = "INSERT INTO address(postalCode, street, province, city, country, apartmentSuite) VALUEs('%s', '%s', '%s', '%s', '%s', %s); "; 
+		query = query.format(query, postalCode, street, province, city, country, apartmentSuite); 
 		this.st.execute(query); 
 		
-		query = "INSERT INTO listingHasAddress(lid, postalCode, city, country, apartmentSuite) VALUEs(last_insert_id(), '%s', '%s', '%s', %s); "; 
-		query = query.format(query, postalCode, city, country, apartmentSuite); 
+		query = "INSERT INTO listingHasAddress(lid, postalCode, street, province, city, country, apartmentSuite) VALUEs(last_insert_id(), '%s', '%s', '%s', '%s', '%s', %s); "; 
+		query = query.format(query, postalCode, street, province, city, country, apartmentSuite); 
 		this.st.execute(query); 
 		
 		query = "INSERT INTO location(latitude, longitude) VALUEs(%s, %s); "; 
@@ -315,7 +315,7 @@ public class MySqlDAO {
 			return 1; 
 		}
 		
-		query = "DELETE FROM address WHERE (postalCode, city, country, apartmentSuite) IN (select postalCode, city, country, apartmentSuite FROM listingHasAddress WHERE lid=%s) "; 
+		query = "DELETE FROM address WHERE (postalCode, street, province, city, country, apartmentSuite) IN (select postalCode, street, province, city, country, apartmentSuite FROM listingHasAddress WHERE lid=%s) "; 
 		query = query.format(query, lid);  
 		this.st.execute(query);
 		
@@ -565,7 +565,7 @@ public class MySqlDAO {
 		String rankStatement = " ORDER BY SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2)) ASC"; 
 		rankStatement = rankStatement.format(rankStatement, latitude, longitude); 
 		
-		String query = "SELECT lid,latitude,longitude,price, ltype, postalCode, apartmentSuite, city, country "
+		String query = "SELECT lid,latitude,longitude,price, ltype, postalCode, street, apartmentSuite, province, city, country "
 				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress "
 				+ "WHERE SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2) )<=%s ";
 		query = query.format(query, latitude, longitude, distanceDefault); 

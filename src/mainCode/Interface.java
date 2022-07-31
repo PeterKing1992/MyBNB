@@ -304,9 +304,16 @@ public static void showFindListingByLocationPage() {
 	
 		JFrame frame = new JFrame("new result");
 	    frame.setSize(1280,720);
+	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
 	    
+//	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
 	    JPanel panel = new JPanel(new GridLayout(0, 9)); 
-	    frame.add(panel); 
+	    
+	    JScrollPane scroller = new JScrollPane(panel); 
+	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    frame.add(mainPanel, BorderLayout.NORTH);
+	    frame.add(scroller, BorderLayout.CENTER);
+	    
 	    
 	//    lid,latitude,longitude,price, type, postalCode, apartmentSuite, city, country
 	    
@@ -1047,6 +1054,16 @@ public static void showAddAmenityPage() {
 	    TextField postalCode = new TextField(50); 
 	    panel.add(postalCode); 
 	    
+	    JLabel enterStreet = new JLabel("Enter the Street: "); 
+	    panel.add(enterStreet); 
+	    TextField street = new TextField(50); 
+	    panel.add(street); 
+	    
+	    JLabel enterProvince = new JLabel("Enter the province/state: "); 
+	    panel.add(enterProvince); 
+	    TextField province = new TextField(50); 
+	    panel.add(province); 
+	    
 	    JLabel enterApartmentSuite = new JLabel("Enter the apartment/suite number: "); 
 	    panel.add(enterApartmentSuite); 
 	    TextField apartmentSuite = new TextField(50); 
@@ -1072,7 +1089,7 @@ public static void showAddAmenityPage() {
 			public void actionPerformed(ActionEvent e) {
 				boolean result = false;
 				try {
-					result = dao.postListing(SIN.getText(), type.getText(), city.getText(), country.getText(), postalCode.getText(), apartmentSuite.getText(), latitude.getText(), longitude.getText());
+					result = dao.postListing(SIN.getText(), type.getText(), city.getText(), country.getText(), postalCode.getText(), street.getText(), province.getText(), apartmentSuite.getText(), latitude.getText(), longitude.getText());
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -1189,9 +1206,19 @@ public static void showAddAmenityPage() {
 	    TextField postalCode = new TextField(6); 
 	    panel.add(postalCode); 
 	    
+	    JLabel enterStreet = new JLabel("Enter Street: "); 
+	    panel.add(enterStreet); 
+	    TextField street = new TextField(50); 
+	    panel.add(street); 
+	    
+	    JLabel enterProvince = new JLabel("Enter Province: "); 
+	    panel.add(enterProvince); 
+	    TextField province = new TextField(50); 
+	    panel.add(province); 
+	    
 	    JLabel enterCountry = new JLabel("Enter Country: "); 
 	    panel.add(enterCountry); 
-	    TextField country = new TextField(6); 
+	    TextField country = new TextField(50); 
 	    panel.add(country); 
 	    
 	    JLabel enterApartmentSuite = new JLabel("Enter apartment/suite number: "); 
@@ -1208,7 +1235,7 @@ public static void showAddAmenityPage() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					boolean result = dao.postUser(SIN.getText(), occupation.getText(), username.getText(), password.getText(), birthday.getText(), 
-							type.getText(), cardNumber.getText(), city.getText(), country.getText(), postalCode.getText(), apartmentSuite.getText());
+							type.getText(), cardNumber.getText(), city.getText(), country.getText(),postalCode.getText(), street.getText(), province.getText(), apartmentSuite.getText());
 					if(result) {
 						success.setText("Successfully Added User"); 
 					}else {
@@ -1277,9 +1304,19 @@ public static void showAddAmenityPage() {
 	    TextField postalCode = new TextField(6); 
 	    panel.add(postalCode); 
 	    
+	    JLabel enterStreet = new JLabel("Enter Street: "); 
+	    panel.add(enterStreet); 
+	    TextField street = new TextField(6); 
+	    panel.add(street); 
+	    
+	    JLabel enterProvince = new JLabel("Enter province/state: "); 
+	    panel.add(enterProvince); 
+	    TextField province = new TextField(6); 
+	    panel.add(province); 
+	    
 	    JLabel enterCountry = new JLabel("Enter Country: "); 
 	    panel.add(enterCountry); 
-	    TextField country = new TextField(6); 
+	    TextField country = new TextField(50); 
 	    panel.add(country); 
 	    
 	    JLabel enterApartmentSuite = new JLabel("Enter apartment/suite number: "); 
@@ -1296,7 +1333,7 @@ public static void showAddAmenityPage() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					boolean result = dao.postUser(SIN.getText(), occupation.getText(), username.getText(), password.getText(), birthday.getText(), 
-							city.getText(), country.getText(), postalCode.getText(), apartmentSuite.getText());
+							city.getText(), country.getText(), postalCode.getText(), street.getText(), province.getText(), apartmentSuite.getText());
 					if(result) {
 						success.setText("Successfully Added User"); 
 					}else {
