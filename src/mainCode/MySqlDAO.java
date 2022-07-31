@@ -132,8 +132,8 @@ public class MySqlDAO {
     			+ "PRIMARY KEY(type, cardNumber, SIN)); "; 
     	this.st.execute(query); 
     	
-    	query = "CREATE TABLE IF NOT EXISTS address(postalCode char(6), city varchar(50), country varchar(50), apartmentSuite INT, "
-    			+ "PRIMARY KEY(postalCode, city, country, apartmentSuite)); "; 
+    	query = "CREATE TABLE IF NOT EXISTS address(postalCode char(6), city varchar(50), country varchar(50), apartmentSuite INT, street varchar(50), "
+    			+ "PRIMARY KEY(postalCode, city, country, apartmentSuite), UNIQUE(street, apartmentSuite, city, country)); "; 
     	this.st.execute(query); 
     	
     	query = "CREATE TABLE IF NOT EXISTS userHasAddress(SIN char(9) PRIMARY KEY, postalCode char(6) NOT NULL, city varchar(50) NOT NULL, country varchar(50) NOT NULL, apartmentSuite INT, "
@@ -553,6 +553,31 @@ public class MySqlDAO {
 		this.st.execute(query); 
 		
 		return 0;
+	}
+
+	public ResultSet findListingByLocation(String latitude, String longitude, String timeWindow, String distance, String priceRank, String amenities, String priceRange) throws SQLException {
+		String distanceDefault = "30"; 
+		
+		if(!distance.equals("")) {
+			distanceDefault = distance; 
+		}
+		
+		String rankStatement = " ORDER BY SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2)) ASC"; 
+		rankStatement = rankStatement.format(rankStatement, latitude, longitude); 
+		
+		String query = "SELECT lid,latitude,longitude,price, ltype, postalCode, apartmentSuite, city, country "
+				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress "
+				+ "WHERE SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2) )<=%s ";
+		query = query.format(query, latitude, longitude, distanceDefault); 
+		
+		//Filters
+		
+		if(!priceRank.equals("")) {
+			rankStatement = " ORDER BY PRICE " + priceRank; 
+		}
+		query += rankStatement; 
+		
+		return this.st.executeQuery(query);
 	}
 
     

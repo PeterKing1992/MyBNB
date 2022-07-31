@@ -144,6 +144,15 @@ public class Interface {
 			
 		};
 		
+		ActionListener findListingByLocationListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showFindListingByLocationPage(); 
+			}
+			
+		};
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
@@ -211,11 +220,163 @@ public class Interface {
 	    renterCommentOnListing.addActionListener(renterCommentOnListingListener); 
 	    panel.add(renterCommentOnListing); 
 	    
+	    JButton findListingByLocation = new JButton("Find listing by location(latitude and longitude)");
+	    findListingByLocation.addActionListener(findListingByLocationListener); 
+	    panel.add(findListingByLocation); 
+	    
 	    frame.setVisible(true);
 	    
 	    
 	}
 	
+public static void showFindListingByLocationPage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterLatitude = new JLabel("Enter the latitude: "); 
+	    panel.add(enterLatitude); 
+	    TextField latitude = new TextField(50); 
+	    panel.add(latitude); 
+	    
+	    JLabel enterLongitude = new JLabel("Enter the longitude: "); 
+	    panel.add(enterLongitude); 
+	    TextField longitude = new TextField(50); 
+	    panel.add(longitude); 
+	    
+	    JLabel enterTimeWindow = new JLabel("Enter the time window you want the listing to be available(enter dates in form(yyyy-MM-dd) separate the start and end by comma E.g. \"2021-01-01,2022-01-01\"): "); 
+	    panel.add(enterTimeWindow); 
+	    TextField timeWindow = new TextField(50); 
+	    panel.add(timeWindow); 
+	    
+	    JLabel enterDistance = new JLabel("Enter the distance of the listing to find within the location specified(leave empty for default distance): "); 
+	    panel.add(enterDistance); 
+	    TextField distance = new TextField(50); 
+	    panel.add(distance); 
+	    
+	    JLabel enterPriceRank = new JLabel("Enter the way to rank the resultingListings by price(\"asc\" for ascending order \"desc\" for descending order) leave empty for default: "); 
+	    panel.add(enterPriceRank); 
+	    TextField priceRank = new TextField(50); 
+	    panel.add(priceRank); 
+	    
+	    JLabel enterAmenities = new JLabel("Enter the amenities you would like the listing to have(separate each amenity by comma E.g. \"swimming pool,large house,beach\") leave empty if you do not want to use this option: "); 
+	    panel.add(enterAmenities); 
+	    TextField amenities = new TextField(100); 
+	    panel.add(amenities); 
+	    
+	    JLabel enterPriceRange = new JLabel("Enter the priceRange you want the listing to be available(enter price in dollars separate the lower and upper bounds by comma E.g. \"25,75\"): "); 
+	    panel.add(enterPriceRange); 
+	    TextField priceRange = new TextField(50); 
+	    panel.add(priceRange); 
+	    
+	    JLabel success = new JLabel("Fill out all the neccessary info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.findListingByLocation(latitude.getText(), longitude.getText(), timeWindow.getText(), distance.getText(), priceRank.getText(), amenities.getText(), priceRange.getText()); 
+					showListingQueryResultPage(rs); 
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showListingQueryResultPage(ResultSet rs) {
+	 
+	
+		JFrame frame = new JFrame("new result");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 9)); 
+	    frame.add(panel); 
+	    
+	//    lid,latitude,longitude,price, type, postalCode, apartmentSuite, city, country
+	    
+	    JLabel lidTitle = new JLabel("lid"); 
+	    panel.add(lidTitle); 
+	    
+	    JLabel latitudeTitle = new JLabel("latitude"); 
+	    panel.add(latitudeTitle); 
+	    
+	    JLabel longitudeTitle = new JLabel("longitude"); 
+	    panel.add(longitudeTitle); 
+	    
+	    JLabel priceTitle = new JLabel("price"); 
+	    panel.add(priceTitle); 
+	    
+	    JLabel typeTitle = new JLabel("type"); 
+	    panel.add(typeTitle); 
+	    
+	    JLabel postalCodeTitle = new JLabel("postal code"); 
+	    panel.add(postalCodeTitle); 
+	    
+	    JLabel apartmentSuiteTitle = new JLabel("apartment/suite"); 
+	    panel.add(apartmentSuiteTitle); 
+	    
+	    JLabel cityTitle = new JLabel("city"); 
+	    panel.add(cityTitle); 
+	    
+	    JLabel countryTitle = new JLabel("country"); 
+	    panel.add(countryTitle); 
+	    
+	    try {
+			while(rs.next()) {
+				JLabel lid = new JLabel(rs.getString("lid")); 
+			    panel.add(lid); 
+				
+			    JLabel latitude = new JLabel(rs.getString("latitude")); 
+			    panel.add(latitude); 
+			    
+			    JLabel longitude = new JLabel(rs.getString("longitude")); 
+			    panel.add(longitude); 
+			    
+			    JLabel price = new JLabel(rs.getString("price")); 
+			    panel.add(price); 
+			    
+			    JLabel type = new JLabel(rs.getString("ltype")); 
+			    panel.add(type); 
+			    
+			    JLabel postalCode = new JLabel(rs.getString("postalCode")); 
+			    panel.add(postalCode); 
+			    
+			    JLabel apartmentSuite = new JLabel(rs.getString("apartmentSuite")); 
+			    panel.add(apartmentSuite); 
+			    
+			    JLabel city = new JLabel(rs.getString("city")); 
+			    panel.add(city); 
+			    
+			    JLabel country = new JLabel(rs.getString("country")); 
+			    panel.add(country); 
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    
+	    frame.setVisible(true);
+    
+    
+	}
+
 	public static void showRenterCommentOnListingPage() {
 		 
 		
