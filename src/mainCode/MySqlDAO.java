@@ -598,6 +598,25 @@ public class MySqlDAO {
 			rankStatement = "ORDER BY AVG(price) " + priceRank; 
 		}
 		
+		if(!priceRange.equals("")) {
+			String[] priceRangeArray = priceRange.split(","); 
+			String lowerBound = priceRangeArray[0]; 
+			String upperBound = priceRangeArray[1]; 
+			String priceRangeFilter = "AND (price BETWEEN %s AND %s) ";
+			priceRangeFilter = priceRangeFilter.format(priceRangeFilter, lowerBound, upperBound); 
+			query += priceRangeFilter; 
+		}
+		
+		if(!amenities.equals("")) {
+			String[] amenitiesArray = amenities.split(","); 
+			String amenitiesFilter = ""; 
+			for(String amenity:amenitiesArray) {
+				String newConstraint = "AND lid IN (SELECT lid FROM listingOfferAmenity NATURAL JOIN amenity WHERE amenityDescription='%s') ";
+				newConstraint = newConstraint.format(newConstraint, amenity); 
+				query += newConstraint; 
+			}
+		}
+		
 		query = query + "GROUP BY lid " + rankStatement; 
 		
 		return this.st.executeQuery(query);
