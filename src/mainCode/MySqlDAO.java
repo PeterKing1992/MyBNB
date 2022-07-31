@@ -574,7 +574,7 @@ public class MySqlDAO {
 		String rankStatement = " ORDER BY SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2)) ASC"; 
 		rankStatement = rankStatement.format(rankStatement, latitude, longitude); 
 		
-		String query = "SELECT lid,latitude,longitude,AVG(price) AS price, ltype, postalCode, street, apartmentSuite, province, city, country "
+		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country "
 				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress "
 				+ "WHERE SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2))<=%s AND isAvailable=true ";
 		query = query.format(query, latitude, longitude, distanceDefault); 
@@ -595,10 +595,10 @@ public class MySqlDAO {
 		}
 		
 		if(!priceRank.equals("")) {
-			rankStatement = "GROUP BY lid ORDER BY AVG(price) " + priceRank; 
+			rankStatement = "ORDER BY AVG(price) " + priceRank; 
 		}
 		
-		query = query + rankStatement; 
+		query = query + "GROUP BY lid " + rankStatement; 
 		
 		return this.st.executeQuery(query);
 	}

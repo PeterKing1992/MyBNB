@@ -326,7 +326,7 @@ public static void showFindListingByLocationPage() {
 	    JLabel longitudeTitle = new JLabel("longitude"); 
 	    panel.add(longitudeTitle); 
 	    
-	    JLabel priceTitle = new JLabel("price"); 
+	    JLabel priceTitle = new JLabel("Price"); 
 	    panel.add(priceTitle); 
 	    
 	    JLabel typeTitle = new JLabel("type"); 
@@ -355,7 +355,7 @@ public static void showFindListingByLocationPage() {
 			    JLabel longitude = new JLabel(rs.getString("longitude")); 
 			    panel.add(longitude); 
 			    
-			    JLabel price = new JLabel(rs.getString("price")); 
+			    JLabel price = new JLabel(rs.getString("avg(price)")); 
 			    panel.add(price); 
 			    
 			    JLabel type = new JLabel(rs.getString("ltype")); 
