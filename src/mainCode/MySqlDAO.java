@@ -557,25 +557,48 @@ public class MySqlDAO {
 
 	public ResultSet findListingByLocation(String latitude, String longitude, String timeWindow, String distance, String priceRank, String amenities, String priceRange) throws SQLException {
 		String distanceDefault = "30"; 
+		String startDate = ""; 
+		String endDate = ""; 
+		
 		
 		if(!distance.equals("")) {
 			distanceDefault = distance; 
 		}
 		
+		if(!timeWindow.equals("")) {
+			String[] temp = timeWindow.split(","); 
+			startDate = temp[0]; 
+			endDate = temp[1]; 
+		}
+		
 		String rankStatement = " ORDER BY SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2)) ASC"; 
 		rankStatement = rankStatement.format(rankStatement, latitude, longitude); 
 		
-		String query = "SELECT lid,latitude,longitude,price, ltype, postalCode, street, apartmentSuite, province, city, country "
+		String query = "SELECT lid,latitude,longitude,AVG(price) AS price, ltype, postalCode, street, apartmentSuite, province, city, country "
 				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress "
-				+ "WHERE SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2) )<=%s ";
+				+ "WHERE SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2))<=%s AND isAvailable=true ";
 		query = query.format(query, latitude, longitude, distanceDefault); 
 		
-		//Filters
+		if(!timeWindow.equals("")) {			
+			//Filters
+//			String temporalFilter = "WITH temporal AS (SELECT lid, latitude, longitude, price, ltype, postalCode, street, apartmentSuite, province, city, country "
+//					+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress"
+//					+ "WHERE lid IN (SELECT lid FROM listingOffering NATURAL JOIN  listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress "
+//					+ "GROUP BY lid HAVING count(offeringDate between '%s' AND '%s')>=(DATEDIFF('%s','%s')+1))) "; 
+//			temporalFilter = temporalFilter.format(temporalFilter, startDate, endDate, endDate, startDate); 
+////			query = " (" + query + ") INTERSECT (" + temporalFilter + ") "; 
+//			query = query + temporalFilter + "SELECT lid, latitude, longitude, AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country "
+//					+ "FROM table1 WHERE lid IN table2 GROUP BY lid"; 
+			String temporalFilter = "AND (lid, offeringDate) IN (SELECT lid, offeringDate FROM (SELECT lid FROM listingOffering GROUP BY lid HAVING count(offeringDate between '%s' AND '%s')>=(DATEDIFF('%s', '%s') + 1)) AS passTemporal NATURAL JOIN listingOffering) "; 
+			temporalFilter = temporalFilter.format(temporalFilter, startDate, endDate, endDate, startDate); 
+			query += temporalFilter; 
+		}
 		
 		if(!priceRank.equals("")) {
-			rankStatement = " ORDER BY PRICE " + priceRank; 
+			rankStatement = "GROUP BY lid ORDER BY AVG(price) " + priceRank; 
 		}
-		query += rankStatement; 
+		
+		query = query + rankStatement; 
 		
 		return this.st.executeQuery(query);
 	}
