@@ -180,6 +180,15 @@ public class Interface {
 			
 		};
 		
+		ActionListener reportNumberOfBookingsByCityAndPostalCodeListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showReportNumberOfBookingsByCityAndPostalCodePage(); 
+			}
+			
+		};
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
@@ -262,6 +271,92 @@ public class Interface {
 	    JButton reportNumberOfBookingsByCity = new JButton("Check Report of Number of bookings by city");
 	    reportNumberOfBookingsByCity.addActionListener(reportNumberOfBookingsByCityListener); 
 	    panel.add(reportNumberOfBookingsByCity); 
+	    
+	    JButton reportNumberOfBookingsByCityAndPostalCode = new JButton("Check Report of Number of bookings by postal code within a city");
+	    reportNumberOfBookingsByCityAndPostalCode.addActionListener(reportNumberOfBookingsByCityAndPostalCodeListener); 
+	    panel.add(reportNumberOfBookingsByCityAndPostalCode); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showReportNumberOfBookingsByCityAndPostalCodePage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterTimeWindow = new JLabel("<HTML>Enter the time window you want to run the report by(enter dates in form(yyyy-MM-dd) separate the start and end by comma E.g. \"2021-01-01,2022-01-01\"): <HTML>"); 
+	    panel.add(enterTimeWindow); 
+	    TextField timeWindow = new TextField(50); 
+	    panel.add(timeWindow); 
+	    
+	    JLabel enterCity = new JLabel("<HTML>Enter the City Name you want to do query in: <HTML>"); 
+	    panel.add(enterCity); 
+	    TextField city = new TextField(50); 
+	    panel.add(city); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.reportNumberOfBookingsByCityAndPostalCode(city.getText(), timeWindow.getText());  
+					showNumberOfBookingsByCityAndPostalCodePage(rs); 
+				} catch (SQLException e1) {
+//					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showNumberOfBookingsByCityAndPostalCodePage(ResultSet rs) {
+		 
+		JFrame frame = new JFrame("new result");
+	    frame.setSize(1280,720);
+	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
+	    
+//	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    
+	    JScrollPane scroller = new JScrollPane(panel); 
+	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    frame.add(mainPanel, BorderLayout.NORTH);
+	    frame.add(scroller, BorderLayout.CENTER);
+	    
+	    
+	//    lid,latitude,longitude,price, type, postalCode, apartmentSuite, city, country
+	    JLabel postalCodeTitle = new JLabel("Postal Code"); 
+	    panel.add(postalCodeTitle); 
+	    
+	    JLabel numberOfBookingsTitle = new JLabel("Number of Bookings"); 
+	    panel.add(numberOfBookingsTitle); 
+	    
+	    try {
+			while(rs.next()) {
+				JLabel postalCode = new JLabel(rs.getString("postalCode")); 
+				panel.add(postalCode); 
+				JLabel numberOfListings = new JLabel(rs.getString("count(bid)")); 
+			    panel.add(numberOfListings); 
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
 	    
 	    frame.setVisible(true);
 	    

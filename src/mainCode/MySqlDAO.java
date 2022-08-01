@@ -1,4 +1,5 @@
 package mainCode;
+import java.awt.TextField;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -736,6 +737,30 @@ public class MySqlDAO {
 		}
 		
 		query = query + "GROUP BY city "; 
+		
+		return this.st.executeQuery(query); 
+	}
+
+	public ResultSet reportNumberOfBookingsByCityAndPostalCode(String city, String timeWindow) throws SQLException {
+		String startDate = ""; 
+		String endDate = ""; 
+		
+		if(!timeWindow.equals("")) {
+			String[] temp = timeWindow.split(","); 
+			startDate = temp[0]; 
+			endDate = temp[1]; 
+		}
+		
+		String query = "SELECT postalCode, count(bid) FROM bookingAssociatedWithOffering NATURAL JOIN listingOffering NATURAL JOIN listingHasAddress WHERE city='%s' "; 
+		query = query.format(query, city); 
+		
+		if(!timeWindow.equals("")) {
+			String temporalFilter = "AND offeringDate between '%s' AND '%s' "; 
+			temporalFilter = temporalFilter.format(temporalFilter, startDate, endDate); 
+			query += temporalFilter; 
+		}
+		
+		query = query + "GROUP BY postalCode "; 
 		
 		return this.st.executeQuery(query); 
 	}
