@@ -189,11 +189,20 @@ public class Interface {
 			
 		};
 		
+		ActionListener reportNumberOfListingsListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showReportNumberOfListingsPage(); 
+			}
+			
+		};
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
 	    
-	    JPanel panel = new JPanel(); 
+	    JPanel panel = new JPanel(new GridLayout(0, 1)); 
 	    frame.add(panel); 
 	    
 	    JButton addRenter = new JButton("Add new Renter");
@@ -276,6 +285,213 @@ public class Interface {
 	    reportNumberOfBookingsByCityAndPostalCode.addActionListener(reportNumberOfBookingsByCityAndPostalCodeListener); 
 	    panel.add(reportNumberOfBookingsByCityAndPostalCode); 
 	    
+	    JButton reportNumberOfListings = new JButton("Check Report of Total Number of listings");
+	    reportNumberOfListings.addActionListener(reportNumberOfListingsListener); 
+	    panel.add(reportNumberOfListings); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showReportNumberOfListingsPage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 1)); 
+	    frame.add(panel); 
+	    
+	    ActionListener numberOfListingsByCountryListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.reportNumberOfListingsByCountry();  
+					showNumberOfListingsByCountryPage(rs); 
+				} catch (SQLException e1) {
+//					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+		
+		ActionListener numberOfListingsByCountryAndCityListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.reportNumberOfListingsByCountryAndCity();   
+					showNumberOfListingsByCountryAndCityPage(rs); 
+				} catch (SQLException e1) {
+//					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+		
+		ActionListener numberOfListingsByCountryAndCityAndPostalCodeListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.reportNumberOfListingsByCountryAndCityAndPostalCode();   
+					showNumberOfListingsByCountryAndCityAndPostalCodePage(rs); 
+				} catch (SQLException e1) {
+//					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+	    
+	    JButton submitNumerOfListingsByCountry = new JButton("Show Number Of Listings By Country");
+	    submitNumerOfListingsByCountry.addActionListener(numberOfListingsByCountryListener);
+	    panel.add(submitNumerOfListingsByCountry); 
+	    
+	    JButton submitNumberOfListingsByCountryAndCity = new JButton("Show Number Of Listings By Country and City");
+	    submitNumberOfListingsByCountryAndCity.addActionListener(numberOfListingsByCountryAndCityListener);
+	    panel.add(submitNumberOfListingsByCountryAndCity); 
+	    
+	    JButton submitNumberOfListingsByCountryAndCityAndPostalCode = new JButton("Show Number Of Listings By Country and City and Postal Code");
+	    submitNumberOfListingsByCountryAndCityAndPostalCode.addActionListener(numberOfListingsByCountryAndCityAndPostalCodeListener);
+	    panel.add(submitNumberOfListingsByCountryAndCityAndPostalCode); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showNumberOfListingsByCountryAndCityAndPostalCodePage(ResultSet rs) {
+		 
+		JFrame frame = new JFrame("new result");
+	    frame.setSize(1280,720);
+	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
+	    
+//	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
+	    JPanel panel = new JPanel(new GridLayout(0, 4)); 
+	    
+	    JScrollPane scroller = new JScrollPane(panel); 
+	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    frame.add(mainPanel, BorderLayout.NORTH);
+	    frame.add(scroller, BorderLayout.CENTER);
+	    
+	    
+	//    lid,latitude,longitude,price, type, postalCode, apartmentSuite, city, country
+	    JLabel countryTitle = new JLabel("country"); 
+	    panel.add(countryTitle); 
+	    
+	    JLabel cityTitle = new JLabel("city"); 
+	    panel.add(cityTitle); 
+	    
+	    JLabel postalCodeTitle = new JLabel("postalCode"); 
+	    panel.add(postalCodeTitle); 
+	    
+	    JLabel numberOfListingsTitle = new JLabel("Number of Listings"); 
+	    panel.add(numberOfListingsTitle); 
+	    
+	    try {
+			while(rs.next()) {
+				JLabel country = new JLabel(rs.getString("country")); 
+				panel.add(country); 
+				JLabel city = new JLabel(rs.getString("city")); 
+				panel.add(city); 
+				JLabel postalCode = new JLabel(rs.getString("postalcode")); 
+				panel.add(postalCode); 
+				JLabel numberOfListings = new JLabel(rs.getString("count(lid)")); 
+			    panel.add(numberOfListings); 
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showNumberOfListingsByCountryAndCityPage(ResultSet rs) {
+		 
+		JFrame frame = new JFrame("new result");
+	    frame.setSize(1280,720);
+	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
+	    
+//	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
+	    JPanel panel = new JPanel(new GridLayout(0, 3)); 
+	    
+	    JScrollPane scroller = new JScrollPane(panel); 
+	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    frame.add(mainPanel, BorderLayout.NORTH);
+	    frame.add(scroller, BorderLayout.CENTER);
+	    
+	    
+	//    lid,latitude,longitude,price, type, postalCode, apartmentSuite, city, country
+	    JLabel countryTitle = new JLabel("country"); 
+	    panel.add(countryTitle); 
+	    
+	    JLabel cityTitle = new JLabel("city"); 
+	    panel.add(cityTitle); 
+	    
+	    JLabel numberOfListingsTitle = new JLabel("Number of Bookings"); 
+	    panel.add(numberOfListingsTitle); 
+	    
+	    try {
+			while(rs.next()) {
+				JLabel country = new JLabel(rs.getString("country")); 
+				panel.add(country); 
+				JLabel city = new JLabel(rs.getString("city")); 
+				panel.add(city); 
+				JLabel numberOfListings = new JLabel(rs.getString("count(lid)")); 
+			    panel.add(numberOfListings); 
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showNumberOfListingsByCountryPage(ResultSet rs) {
+		 
+		JFrame frame = new JFrame("new result");
+	    frame.setSize(1280,720);
+	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
+	    
+//	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    
+	    JScrollPane scroller = new JScrollPane(panel); 
+	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    frame.add(mainPanel, BorderLayout.NORTH);
+	    frame.add(scroller, BorderLayout.CENTER);
+	    
+	    
+	//    lid,latitude,longitude,price, type, postalCode, apartmentSuite, city, country
+	    JLabel countryTitle = new JLabel("Country"); 
+	    panel.add(countryTitle); 
+	    
+	    JLabel numberOfListingsTitle = new JLabel("Number of Listings"); 
+	    panel.add(numberOfListingsTitle); 
+	    
+	    try {
+			while(rs.next()) {
+				JLabel country = new JLabel(rs.getString("country")); 
+				panel.add(country); 
+				JLabel numberOfListings = new JLabel(rs.getString("count(lid)")); 
+			    panel.add(numberOfListings); 
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    
 	    frame.setVisible(true);
 	    
 	    
@@ -330,7 +546,7 @@ public class Interface {
 	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
 	    
 //	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
-	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    JPanel panel = new JPanel(new GridLayout(0, 3)); 
 	    
 	    JScrollPane scroller = new JScrollPane(panel); 
 	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -339,6 +555,9 @@ public class Interface {
 	    
 	    
 	//    lid,latitude,longitude,price, type, postalCode, apartmentSuite, city, country
+	    JLabel cityTitle = new JLabel("City"); 
+	    panel.add(cityTitle); 
+	    
 	    JLabel postalCodeTitle = new JLabel("Postal Code"); 
 	    panel.add(postalCodeTitle); 
 	    
@@ -347,6 +566,8 @@ public class Interface {
 	    
 	    try {
 			while(rs.next()) {
+				JLabel city = new JLabel(rs.getString("city")); 
+			    panel.add(city); 
 				JLabel postalCode = new JLabel(rs.getString("postalCode")); 
 				panel.add(postalCode); 
 				JLabel numberOfListings = new JLabel(rs.getString("count(bid)")); 

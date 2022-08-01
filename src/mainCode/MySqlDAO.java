@@ -765,6 +765,21 @@ public class MySqlDAO {
 		return this.st.executeQuery(query); 
 	}
 
+	public ResultSet reportNumberOfListingsByCountry() throws SQLException {
+		String query = "SELECT country, count(lid) FROM listing NATURAL JOIN listingHasAddress GROUP BY country"; 
+		return this.st.executeQuery(query);
+	}
+
+	public ResultSet reportNumberOfListingsByCountryAndCity() throws SQLException {
+		String query = "SELECT country, city, count(lid) FROM listing NATURAL JOIN listingHasAddress GROUP BY country, city"; 
+		return this.st.executeQuery(query);
+	}
+
+	public ResultSet reportNumberOfListingsByCountryAndCityAndPostalCode() throws SQLException {
+		String query = "SELECT country, city, postalCode, count(lid) FROM listing NATURAL JOIN listingHasAddress GROUP BY country, city, postalCode"; 
+		return this.st.executeQuery(query);
+	}
+
 	
 
     
