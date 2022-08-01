@@ -153,6 +153,15 @@ public class Interface {
 			
 		};
 		
+		ActionListener findListingByPostalCodeListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showFindListingByPostalCodePage(); 
+			}
+			
+		};
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
@@ -224,12 +233,85 @@ public class Interface {
 	    findListingByLocation.addActionListener(findListingByLocationListener); 
 	    panel.add(findListingByLocation); 
 	    
+	    JButton findListingByPostalCode = new JButton("Find listing by postalCode");
+	    findListingByPostalCode.addActionListener(findListingByPostalCodeListener); 
+	    panel.add(findListingByPostalCode); 
+	    
+//	    JButton findListingByAddress = new JButton("Find listing by address");
+//	    findListingByAddress.addActionListener(findListingByPostalCodeListener); 
+//	    panel.add(findListingByAddress); 
+	    
 	    frame.setVisible(true);
 	    
 	    
 	}
 	
-public static void showFindListingByLocationPage() {
+	public static void showFindListingByPostalCodePage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterPostalCode = new JLabel("Enter PostalCode: "); 
+	    panel.add(enterPostalCode); 
+	    TextField postalCode = new TextField(50); 
+	    panel.add(postalCode); 
+	    
+	    JLabel enterTimeWindow = new JLabel("Enter the time window you want the listing to be available(enter dates in form(yyyy-MM-dd) separate the start and end by comma E.g. \"2021-01-01,2022-01-01\"): "); 
+	    panel.add(enterTimeWindow); 
+	    TextField timeWindow = new TextField(50); 
+	    panel.add(timeWindow); 
+	    
+	    JLabel enterDistance = new JLabel("<HTML>Enter the distance of the listing to find within the location specified(leave empty for default distance): <HTML>"); 
+	    panel.add(enterDistance); 
+	    TextField distance = new TextField(50); 
+	    panel.add(distance); 
+	    
+	    JLabel enterPriceRank = new JLabel("<HTML>Enter the way to rank the resultingListings by price(\"asc\" for ascending order \"desc\" for descending order) leave empty for default: <HTML>"); 
+	    panel.add(enterPriceRank); 
+	    TextField priceRank = new TextField(50); 
+	    panel.add(priceRank); 
+	    
+	    JLabel enterAmenities = new JLabel("Enter the amenities you would like the listing to have(separate each amenity by comma E.g. \"swimming pool,large house,beach\") leave empty if you do not want to use this option: "); 
+	    panel.add(enterAmenities); 
+	    TextField amenities = new TextField(100); 
+	    panel.add(amenities); 
+	    
+	    JLabel enterPriceRange = new JLabel("Enter the priceRange you want the listing to be available(enter price in dollars separate the lower and upper bounds by comma E.g. \"25,75\"): "); 
+	    panel.add(enterPriceRange); 
+	    TextField priceRange = new TextField(50); 
+	    panel.add(priceRange); 
+	    
+	    JLabel success = new JLabel("Fill out all the neccessary info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.findListingByPostalCode(postalCode.getText(), timeWindow.getText(), distance.getText(), priceRank.getText(), amenities.getText(), priceRange.getText()); 
+					showListingQueryResultPage(rs); 
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showFindListingByLocationPage() {
 		 
 		
 		JFrame frame = new JFrame("new operation");
