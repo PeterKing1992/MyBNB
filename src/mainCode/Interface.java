@@ -171,6 +171,15 @@ public class Interface {
 			
 		};
 		
+		ActionListener reportNumberOfBookingsByCityListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showReportNumberOfBookingsByCityPage(); 
+			}
+			
+		};
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
@@ -250,9 +259,90 @@ public class Interface {
 	    findListingByAddress.addActionListener(findListingByAddressListener); 
 	    panel.add(findListingByAddress); 
 	    
+	    JButton reportNumberOfBookingsByCity = new JButton("Check Report of Number of bookings by city");
+	    reportNumberOfBookingsByCity.addActionListener(reportNumberOfBookingsByCityListener); 
+	    panel.add(reportNumberOfBookingsByCity); 
+	    
 	    frame.setVisible(true);
 	    
 	    
+	}
+	
+	public static void showReportNumberOfBookingsByCityPage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterTimeWindow = new JLabel("<HTML>Enter the time window you want to run the report by(enter dates in form(yyyy-MM-dd) separate the start and end by comma E.g. \"2021-01-01,2022-01-01\"): <HTML>"); 
+	    panel.add(enterTimeWindow); 
+	    TextField timeWindow = new TextField(50); 
+	    panel.add(timeWindow); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.reportNumberOfBookingsByCity(timeWindow.getText());  
+					showNumberOfBookingsByCityPage(rs); 
+				} catch (SQLException e1) {
+//					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showNumberOfBookingsByCityPage(ResultSet rs) {
+		 
+		
+		JFrame frame = new JFrame("new result");
+	    frame.setSize(1280,720);
+	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
+	    
+//	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    
+	    JScrollPane scroller = new JScrollPane(panel); 
+	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    frame.add(mainPanel, BorderLayout.NORTH);
+	    frame.add(scroller, BorderLayout.CENTER);
+	    
+	    
+	//    lid,latitude,longitude,price, type, postalCode, apartmentSuite, city, country
+	    JLabel cityTitle = new JLabel("City"); 
+	    panel.add(cityTitle); 
+	    JLabel numberOfBookingsTitle = new JLabel("Number of Bookings"); 
+	    panel.add(numberOfBookingsTitle); 
+	    
+	    try {
+			while(rs.next()) {
+				JLabel city = new JLabel(rs.getString("city")); 
+				panel.add(city); 
+				JLabel numberOfListings = new JLabel(rs.getString("count(bid)")); 
+			    panel.add(numberOfListings); 
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    
+	    frame.setVisible(true);
+    
+    
 	}
 	
 	public static void showFindListingByAddressPage() {

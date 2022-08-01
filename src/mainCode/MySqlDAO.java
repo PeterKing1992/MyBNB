@@ -672,7 +672,7 @@ public class MySqlDAO {
 	}
 
 	public ResultSet findListingByAddress(String postalCode, String street, String province, String city, String country, 
-			String apartmentSuite, String timeWindow, String amenities, String priceRange) throws SQLException {
+		String apartmentSuite, String timeWindow, String amenities, String priceRange) throws SQLException {
 		String startDate = ""; 
 		String endDate = ""; 
 		
@@ -716,6 +716,31 @@ public class MySqlDAO {
 		
 		return this.st.executeQuery(query);
 	}
+
+	public ResultSet reportNumberOfBookingsByCity(String timeWindow) throws SQLException {
+		String startDate = ""; 
+		String endDate = ""; 
+		
+		if(!timeWindow.equals("")) {
+			String[] temp = timeWindow.split(","); 
+			startDate = temp[0]; 
+			endDate = temp[1]; 
+		}
+		
+		String query = "SELECT city, count(bid) FROM bookingAssociatedWithOffering NATURAL JOIN listingOffering NATURAL JOIN listingHasAddress "; 
+		
+		if(!timeWindow.equals("")) {
+			String temporalFilter = "WHERE offeringDate between '%s' AND '%s' "; 
+			temporalFilter = temporalFilter.format(temporalFilter, startDate, endDate); 
+			query += temporalFilter; 
+		}
+		
+		query = query + "GROUP BY city "; 
+		
+		return this.st.executeQuery(query); 
+	}
+
+	
 
     
 }
