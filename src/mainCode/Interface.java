@@ -162,6 +162,15 @@ public class Interface {
 			
 		};
 		
+		ActionListener findListingByAddressListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showFindListingByAddressPage(); 
+			}
+			
+		};
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
@@ -237,9 +246,89 @@ public class Interface {
 	    findListingByPostalCode.addActionListener(findListingByPostalCodeListener); 
 	    panel.add(findListingByPostalCode); 
 	    
-//	    JButton findListingByAddress = new JButton("Find listing by address");
-//	    findListingByAddress.addActionListener(findListingByPostalCodeListener); 
-//	    panel.add(findListingByAddress); 
+	    JButton findListingByAddress = new JButton("Find listing by address");
+	    findListingByAddress.addActionListener(findListingByAddressListener); 
+	    panel.add(findListingByAddress); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showFindListingByAddressPage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterPostalCode = new JLabel("Enter PostalCode: "); 
+	    panel.add(enterPostalCode); 
+	    TextField postalCode = new TextField(50); 
+	    panel.add(postalCode); 
+	    
+	    JLabel enterStreet = new JLabel("Enter street: "); 
+	    panel.add(enterStreet); 
+	    TextField street = new TextField(50); 
+	    panel.add(street); 
+	    
+	    JLabel enterProvince = new JLabel("Enter Province: "); 
+	    panel.add(enterProvince); 
+	    TextField province = new TextField(50); 
+	    panel.add(province); 
+	    
+	    JLabel enterCity = new JLabel("Enter City: "); 
+	    panel.add(enterCity); 
+	    TextField city = new TextField(50); 
+	    panel.add(city); 
+	    
+	    JLabel enterCountry = new JLabel("Enter Country: "); 
+	    panel.add(enterCountry); 
+	    TextField country = new TextField(50); 
+	    panel.add(country); 
+	    
+	    JLabel enterApartmentSuite = new JLabel("Enter Apartment/Suite Number: "); 
+	    panel.add(enterApartmentSuite); 
+	    TextField apartmentSuite = new TextField(50); 
+	    panel.add(apartmentSuite); 
+	    
+	    JLabel enterTimeWindow = new JLabel("<HTML>Enter the time window you want the listing to be available(enter dates in form(yyyy-MM-dd) separate the start and end by comma E.g. \"2021-01-01,2022-01-01\"): <HTML>"); 
+	    panel.add(enterTimeWindow); 
+	    TextField timeWindow = new TextField(50); 
+	    panel.add(timeWindow); 
+	    
+	    JLabel enterAmenities = new JLabel("<HTML>Enter the amenities you would like the listing to have(separate each amenity by comma E.g. \"swimming pool,large house,beach\") leave empty if you do not want to use this option: <HTML>"); 
+	    panel.add(enterAmenities); 
+	    TextField amenities = new TextField(100); 
+	    panel.add(amenities); 
+	    
+	    JLabel enterPriceRange = new JLabel("<HTML>Enter the priceRange you want the listing to be available(enter price in dollars separate the lower and upper bounds by comma E.g. \"25,75\"): <HTML>"); 
+	    panel.add(enterPriceRange); 
+	    TextField priceRange = new TextField(50); 
+	    panel.add(priceRange); 
+	    
+	    JLabel success = new JLabel("Fill out all the neccessary info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.findListingByAddress(postalCode.getText(), street.getText(), province.getText(), city.getText(), country.getText(), apartmentSuite.getText(), timeWindow.getText(), amenities.getText(), priceRange.getText()); 
+					showListingQueryResultPage(rs); 
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
 	    
 	    frame.setVisible(true);
 	    
@@ -260,7 +349,7 @@ public class Interface {
 	    TextField postalCode = new TextField(50); 
 	    panel.add(postalCode); 
 	    
-	    JLabel enterTimeWindow = new JLabel("Enter the time window you want the listing to be available(enter dates in form(yyyy-MM-dd) separate the start and end by comma E.g. \"2021-01-01,2022-01-01\"): "); 
+	    JLabel enterTimeWindow = new JLabel("<HTML>Enter the time window you want the listing to be available(enter dates in form(yyyy-MM-dd) separate the start and end by comma E.g. \"2021-01-01,2022-01-01\"): <HTML>"); 
 	    panel.add(enterTimeWindow); 
 	    TextField timeWindow = new TextField(50); 
 	    panel.add(timeWindow); 
@@ -275,12 +364,12 @@ public class Interface {
 	    TextField priceRank = new TextField(50); 
 	    panel.add(priceRank); 
 	    
-	    JLabel enterAmenities = new JLabel("Enter the amenities you would like the listing to have(separate each amenity by comma E.g. \"swimming pool,large house,beach\") leave empty if you do not want to use this option: "); 
+	    JLabel enterAmenities = new JLabel("<HTML>Enter the amenities you would like the listing to have(separate each amenity by comma E.g. \"swimming pool,large house,beach\") leave empty if you do not want to use this option: <HTML>"); 
 	    panel.add(enterAmenities); 
 	    TextField amenities = new TextField(100); 
 	    panel.add(amenities); 
 	    
-	    JLabel enterPriceRange = new JLabel("Enter the priceRange you want the listing to be available(enter price in dollars separate the lower and upper bounds by comma E.g. \"25,75\"): "); 
+	    JLabel enterPriceRange = new JLabel("<HTML>Enter the priceRange you want the listing to be available(enter price in dollars separate the lower and upper bounds by comma E.g. \"25,75\"): <HTML>"); 
 	    panel.add(enterPriceRange); 
 	    TextField priceRange = new TextField(50); 
 	    panel.add(priceRange); 
@@ -330,27 +419,27 @@ public class Interface {
 	    TextField longitude = new TextField(50); 
 	    panel.add(longitude); 
 	    
-	    JLabel enterTimeWindow = new JLabel("Enter the time window you want the listing to be available(enter dates in form(yyyy-MM-dd) separate the start and end by comma E.g. \"2021-01-01,2022-01-01\"): "); 
+	    JLabel enterTimeWindow = new JLabel("<HTML>Enter the time window you want the listing to be available(enter dates in form(yyyy-MM-dd) separate the start and end by comma E.g. \"2021-01-01,2022-01-01\"): <HTML>"); 
 	    panel.add(enterTimeWindow); 
 	    TextField timeWindow = new TextField(50); 
 	    panel.add(timeWindow); 
 	    
-	    JLabel enterDistance = new JLabel("Enter the distance of the listing to find within the location specified(leave empty for default distance): "); 
+	    JLabel enterDistance = new JLabel("<HTML>Enter the distance of the listing to find within the location specified(leave empty for default distance): <HTML>"); 
 	    panel.add(enterDistance); 
 	    TextField distance = new TextField(50); 
 	    panel.add(distance); 
 	    
-	    JLabel enterPriceRank = new JLabel("Enter the way to rank the resultingListings by price(\"asc\" for ascending order \"desc\" for descending order) leave empty for default: "); 
+	    JLabel enterPriceRank = new JLabel("<HTML>Enter the way to rank the resultingListings by price(\"asc\" for ascending order \"desc\" for descending order) leave empty for default: <HTML>"); 
 	    panel.add(enterPriceRank); 
 	    TextField priceRank = new TextField(50); 
 	    panel.add(priceRank); 
 	    
-	    JLabel enterAmenities = new JLabel("Enter the amenities you would like the listing to have(separate each amenity by comma E.g. \"swimming pool,large house,beach\") leave empty if you do not want to use this option: "); 
+	    JLabel enterAmenities = new JLabel("<HTML>Enter the amenities you would like the listing to have(separate each amenity by comma E.g. \"swimming pool,large house,beach\") leave empty if you do not want to use this option: <HTML>"); 
 	    panel.add(enterAmenities); 
 	    TextField amenities = new TextField(100); 
 	    panel.add(amenities); 
 	    
-	    JLabel enterPriceRange = new JLabel("Enter the priceRange you want the listing to be available(enter price in dollars separate the lower and upper bounds by comma E.g. \"25,75\"): "); 
+	    JLabel enterPriceRange = new JLabel("<HTML>Enter the priceRange you want the listing to be available(enter price in dollars separate the lower and upper bounds by comma E.g. \"25,75\"): <HTML>"); 
 	    panel.add(enterPriceRange); 
 	    TextField priceRange = new TextField(50); 
 	    panel.add(priceRange); 
