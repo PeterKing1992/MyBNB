@@ -198,12 +198,33 @@ public class Interface {
 			
 		};
 		
+		ActionListener reportHostsRankByCountryCityListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showReportHostsRankByCountryCityPage(); 
+			}
+			
+		};
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
 	    
+//	    JPanel panel = new JPanel(new GridLayout(0, 1)); 
+//	    frame.add(panel); 
+	    
+	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
+//	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
 	    JPanel panel = new JPanel(new GridLayout(0, 1)); 
-	    frame.add(panel); 
+	    JScrollPane scroller = new JScrollPane(panel); 
+	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    frame.add(mainPanel, BorderLayout.NORTH);
+	    frame.add(scroller, BorderLayout.CENTER);
+	    //
+	    
+	    JLabel basicOps = new JLabel("Basic Operations"); 
+	    panel.add(basicOps); 
 	    
 	    JButton addRenter = new JButton("Add new Renter");
 	    addRenter.addActionListener(addRenterListener);
@@ -265,6 +286,9 @@ public class Interface {
 	    renterCommentOnListing.addActionListener(renterCommentOnListingListener); 
 	    panel.add(renterCommentOnListing); 
 	    
+	    JLabel findListings = new JLabel("Find Listings"); 
+	    panel.add(findListings); 
+	    
 	    JButton findListingByLocation = new JButton("Find listing by location(latitude and longitude)");
 	    findListingByLocation.addActionListener(findListingByLocationListener); 
 	    panel.add(findListingByLocation); 
@@ -277,6 +301,9 @@ public class Interface {
 	    findListingByAddress.addActionListener(findListingByAddressListener); 
 	    panel.add(findListingByAddress); 
 	    
+	    JLabel reports = new JLabel("Reports"); 
+	    panel.add(reports); 
+	    
 	    JButton reportNumberOfBookingsByCity = new JButton("Check Report of Number of bookings by city");
 	    reportNumberOfBookingsByCity.addActionListener(reportNumberOfBookingsByCityListener); 
 	    panel.add(reportNumberOfBookingsByCity); 
@@ -288,6 +315,97 @@ public class Interface {
 	    JButton reportNumberOfListings = new JButton("Check Report of Total Number of listings");
 	    reportNumberOfListings.addActionListener(reportNumberOfListingsListener); 
 	    panel.add(reportNumberOfListings); 
+	    
+	    JButton reportHostsRankByArea = new JButton("Check Rank of Hosts Based on their Total Number of Listings per Area");
+	    reportHostsRankByArea.addActionListener(reportHostsRankByCountryCityListener); 
+	    panel.add(reportHostsRankByArea); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showReportHostsRankByCountryCityPage() {
+		 
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterCountry = new JLabel("<HTML>Enter the country you want to rank the hosts by their number of listings in: <HTML>"); 
+	    panel.add(enterCountry);
+	    TextField country = new TextField(50); 
+	    panel.add(country);
+	    
+	    JLabel enterCity = new JLabel("<HTML>Enter the City Name you want to do rank the hosts by their number of listings in(optional, leave it blank if you do not want to use it): <HTML>"); 
+	    panel.add(enterCity); 
+	    TextField city = new TextField(50); 
+	    panel.add(city); 
+		
+		ActionListener submitListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.rankHostsByCountryCity(country.getText(), city.getText());   
+					showHostsRankByCountryCityPage(rs); 
+				} catch (SQLException e1) {
+//					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+	    
+	    JButton submit = new JButton("submit");
+	    submit.addActionListener(submitListener);
+	    panel.add(submit); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showHostsRankByCountryCityPage(ResultSet rs) {
+		 
+		JFrame frame = new JFrame("new result");
+	    frame.setSize(1280,720);
+	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
+	    
+//	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 3)); 
+	    
+	    JScrollPane scroller = new JScrollPane(panel); 
+	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    frame.add(mainPanel, BorderLayout.NORTH);
+	    frame.add(scroller, BorderLayout.CENTER);
+	    
+	    
+	    //    lid,latitude,longitude,price, type, postalCode, apartmentSuite, city, country
+	    JLabel sinTitle = new JLabel("SIN"); 
+	    panel.add(sinTitle); 
+	    
+	    JLabel usernameTitle = new JLabel("username"); 
+	    panel.add(usernameTitle); 
+	    
+	    JLabel numListingsTitle = new JLabel("Number of Listings owned"); 
+	    panel.add(numListingsTitle); 
+	    
+	    try {
+			while(rs.next()) {
+				JLabel sin = new JLabel(rs.getString("SIN")); 
+			    panel.add(sin); 
+			    JLabel username = new JLabel(rs.getString("uname")); 
+			    panel.add(username); 
+			    JLabel numListings = new JLabel(rs.getString("count(lid)")); 
+			    panel.add(numListings); 
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
 	    
 	    frame.setVisible(true);
 	    

@@ -97,7 +97,7 @@ public class MySqlDAO {
        	query = query.format(query,sin, paymentType, cardNumber); 
        	this.st.execute(query); 
        	
-       	query = "INSERT INTO address(postalCode, street, province, city, country, apartmentSuite) VALUES('%s', '%s', '%s', '%s', '%s', %s); "; 
+       	query = "INSERT IGNORE INTO address(postalCode, street, province, city, country, apartmentSuite) VALUES('%s', '%s', '%s', '%s', '%s', %s); "; 
        	query = query.format(query, postalCode, street, province, city, country, apartmentSuite); 
        	this.st.execute(query); 
        	
@@ -139,7 +139,7 @@ public class MySqlDAO {
     	
     	query = "CREATE TABLE IF NOT EXISTS userHasAddress(SIN char(9) PRIMARY KEY, postalCode char(6) NOT NULL, street varchar(50) NOT NULL, province varchar(50) not null, city varchar(50) NOT NULL, country varchar(50) NOT NULL, apartmentSuite INT, "
     			+ "FOREIGN KEY(postalCode, street, province, city, country, apartmentSuite) REFERENCES address(postalCode, street, province, city, country, apartmentSuite) ON DELETE CASCADE, "
-    			+ "UNIQUE(postalCode, street, province, city, country), "
+    			+ "UNIQUE(postalCode, street, province, city, country, apartmentSuite), "
     			+ "FOREIGN KEY(SIN) REFERENCES user(SIN) ON DELETE CASCADE); "; 
     	this.st.execute(query); 
     	
@@ -777,6 +777,21 @@ public class MySqlDAO {
 
 	public ResultSet reportNumberOfListingsByCountryAndCityAndPostalCode() throws SQLException {
 		String query = "SELECT country, city, postalCode, count(lid) FROM listing NATURAL JOIN listingHasAddress GROUP BY country, city, postalCode"; 
+		return this.st.executeQuery(query);
+	}
+
+	public ResultSet rankHostsByCountryCity(String country, String city) throws SQLException {
+		String query = "SELECT SIN, uname, count(lid) FROM user NATURAL JOIN host NATURAL JOIN hostPostListing NATURAL JOIN listingHasAddress WHERE country='%s' ";
+		query = query.format(query, country); 
+		
+		if(!city.equals("")) {
+			String cityConstraint = "AND city='%s' "; 
+			cityConstraint = cityConstraint.format(cityConstraint, city); 
+			query += cityConstraint; 
+		}
+		
+		query += "GROUP BY SIN ORDER BY count(lid) DESC"; 
+		
 		return this.st.executeQuery(query);
 	}
 
