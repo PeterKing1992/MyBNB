@@ -207,6 +207,15 @@ public class Interface {
 			
 		};
 		
+		ActionListener reportCommercialHostsListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showReportCommercialHostsPage(); 
+			}
+			
+		};
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
@@ -319,6 +328,98 @@ public class Interface {
 	    JButton reportHostsRankByArea = new JButton("Check Rank of Hosts Based on their Total Number of Listings per Area");
 	    reportHostsRankByArea.addActionListener(reportHostsRankByCountryCityListener); 
 	    panel.add(reportHostsRankByArea); 
+	    
+	    JButton reportCommercialHosts = new JButton("Check Report of Commercial Hosts By City");
+	    reportCommercialHosts.addActionListener(reportCommercialHostsListener); 
+	    panel.add(reportCommercialHosts); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showReportCommercialHostsPage() {
+		 
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterCountry = new JLabel("<HTML>Enter the country you want to find the commercial hosts in: <HTML>"); 
+	    panel.add(enterCountry);
+	    TextField country = new TextField(50); 
+	    panel.add(country);
+	    
+	    JLabel enterCity = new JLabel("<HTML>Enter the City you want to find the commercial hosts in: <HTML>"); 
+	    panel.add(enterCity); 
+	    TextField city = new TextField(50); 
+	    panel.add(city); 
+		
+		ActionListener submitListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.reportCommercialHosts(country.getText(), city.getText());   
+					showCommercialHostsPage(rs); 
+				} catch (SQLException e1) {
+//					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+	    
+	    JButton submit = new JButton("submit");
+	    submit.addActionListener(submitListener);
+	    panel.add(submit); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showCommercialHostsPage(ResultSet rs) {
+		
+		JFrame frame = new JFrame("new result");
+	    frame.setSize(1280,720);
+	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
+	    
+//	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 3)); 
+	    
+	    JScrollPane scroller = new JScrollPane(panel); 
+	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    frame.add(mainPanel, BorderLayout.NORTH);
+	    frame.add(scroller, BorderLayout.CENTER);
+	    
+	    
+	    //    lid,latitude,longitude,price, type, postalCode, apartmentSuite, city, country
+	    
+	    JLabel sinTitle = new JLabel("SIN"); 
+	    panel.add(sinTitle); 
+	    
+	    JLabel usernameTitle = new JLabel("username"); 
+	    panel.add(usernameTitle); 
+	    
+	    JLabel numListingsTitle = new JLabel("<HTML>Ratio of listing owned against total number of listings in the city<HTML>"); 
+	    panel.add(numListingsTitle); 
+	    
+	    try {
+			while(rs.next()) {
+				JLabel sin = new JLabel(rs.getString("SIN")); 
+			    panel.add(sin); 
+			    JLabel username = new JLabel(rs.getString("uname")); 
+			    panel.add(username); 
+			    JLabel numListings = new JLabel(rs.getString("ratio")); 
+			    panel.add(numListings); 
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
 	    
 	    frame.setVisible(true);
 	    

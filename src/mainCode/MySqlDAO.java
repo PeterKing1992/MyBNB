@@ -795,6 +795,13 @@ public class MySqlDAO {
 		return this.st.executeQuery(query);
 	}
 
+	public ResultSet reportCommercialHosts(String country, String city) throws SQLException {
+		String query = "SELECT SIN, uname, count(lid)/(SELECT count(lid) FROM listingHasAddress WHERE country='%s' AND city='%s' GROUP BY country, city) as ratio FROM user NATURAL JOIN host NATURAL JOIN hostPostListing NATURAL JOIN listingHasAddress WHERE country ='%s' AND city='%s' "
+				+ "GROUP BY SIN HAVING count(lid)/(SELECT count(lid) FROM listingHasAddress WHERE country='%s' AND city='%s' GROUP BY country, city) > 0.1"; 
+		query = query.format(query, country, city, country, city, country, city); 
+		return this.st.executeQuery(query);
+	}
+
 	
 
     
