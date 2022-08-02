@@ -216,6 +216,15 @@ public class Interface {
 			
 		};
 		
+		ActionListener reportRentersRankListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showReportRentersRankPage();  
+			}
+			
+		};
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
@@ -332,6 +341,98 @@ public class Interface {
 	    JButton reportCommercialHosts = new JButton("Check Report of Commercial Hosts By City");
 	    reportCommercialHosts.addActionListener(reportCommercialHostsListener); 
 	    panel.add(reportCommercialHosts); 
+	    
+	    JButton reportRentersRank = new JButton("Check Rank of Renters Based on their Total Number of bookings within a period");
+	    reportRentersRank.addActionListener(reportRentersRankListener); 
+	    panel.add(reportRentersRank); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showRentersRankPage(ResultSet rs) {
+		
+		JFrame frame = new JFrame("new result");
+	    frame.setSize(1280,720);
+	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
+	    
+//	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 3)); 
+	    
+	    JScrollPane scroller = new JScrollPane(panel); 
+	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    frame.add(mainPanel, BorderLayout.NORTH);
+	    frame.add(scroller, BorderLayout.CENTER);
+	    
+	    
+	    //    lid,latitude,longitude,price, type, postalCode, apartmentSuite, city, country
+	    
+	    JLabel sinTitle = new JLabel("SIN"); 
+	    panel.add(sinTitle); 
+	    
+	    JLabel usernameTitle = new JLabel("username"); 
+	    panel.add(usernameTitle); 
+	    
+	    JLabel numBookingsTitle = new JLabel("<HTML>Number Of Bookings<HTML>"); 
+	    panel.add(numBookingsTitle); 
+	    
+	    try {
+			while(rs.next()) {
+				JLabel sin = new JLabel(rs.getString("SIN")); 
+			    panel.add(sin); 
+			    JLabel username = new JLabel(rs.getString("uname")); 
+			    panel.add(username); 
+			    JLabel numBookings = new JLabel(rs.getString("count(bid)")); 
+			    panel.add(numBookings); 
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showReportRentersRankPage() {
+		 
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterTimeWindow = new JLabel("<HTML>Enter The Time Window You would like to rank the renters based on their number of bookings in(separate the beginning date and end date by comma and write the dates in form \"YYYY-MM-dd\", E.g.\"2022-01-01,2023-01-01\"): <HTML>"); 
+	    panel.add(enterTimeWindow);
+	    TextField timeWindow = new TextField(50); 
+	    panel.add(timeWindow);
+	    
+	    JLabel enterCity = new JLabel("<HTML>Enter the City Name you want to do rank the renters by their number of bookings in(optional, leave it blank if you do not want to use it): <HTML>"); 
+	    panel.add(enterCity); 
+	    TextField city = new TextField(50); 
+	    panel.add(city); 
+		
+		ActionListener submitListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.rankRentersByBookings(timeWindow.getText(), city.getText());   
+					showRentersRankPage(rs); 
+				} catch (SQLException e1) {
+//					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+	    
+	    JButton submit = new JButton("submit");
+	    submit.addActionListener(submitListener);
+	    panel.add(submit); 
 	    
 	    frame.setVisible(true);
 	    

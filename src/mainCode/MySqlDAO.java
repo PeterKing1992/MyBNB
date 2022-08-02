@@ -581,7 +581,7 @@ public class MySqlDAO {
 		query = query.format(query, latitude, longitude, distanceDefault); 
 		
 		if(!timeWindow.equals("")) {
-			String temporalFilter = "AND (lid, offeringDate) IN (SELECT lid, offeringDate FROM (SELECT lid FROM listingOffering WHERE offeringDate between '%s' AND '%s' GROUP BY lid HAVING count(offeringDate)>=(DATEDIFF('%s', '%s') + 1)) AS passTemporal NATURAL JOIN listingOffering) "; 
+			String temporalFilter = "AND (lid, offeringDate) IN (SELECT lid, offeringDate FROM (SELECT lid FROM listingOffering WHERE isAvailable=true AND offeringDate between '%s' AND '%s' GROUP BY lid HAVING count(offeringDate)>=(DATEDIFF('%s', '%s') + 1)) AS passTemporal NATURAL JOIN listingOffering) "; 
 			temporalFilter = temporalFilter.format(temporalFilter, startDate, endDate, endDate, startDate); 
 			query += temporalFilter; 
 		}
@@ -639,7 +639,7 @@ public class MySqlDAO {
 		query = query.format(query, postalCode, distanceDefault); 
 		
 		if(!timeWindow.equals("")) {
-			String temporalFilter = "AND (lid, offeringDate) IN (SELECT lid, offeringDate FROM (SELECT lid FROM listingOffering WHERE offeringDate between '%s' AND '%s' GROUP BY lid HAVING count(offeringDate)>=(DATEDIFF('%s', '%s') + 1)) AS passTemporal NATURAL JOIN listingOffering) "; 
+			String temporalFilter = "AND (lid, offeringDate) IN (SELECT lid, offeringDate FROM (SELECT lid FROM listingOffering WHERE isAvailable=true AND offeringDate between '%s' AND '%s' GROUP BY lid HAVING count(offeringDate)>=(DATEDIFF('%s', '%s') + 1)) AS passTemporal NATURAL JOIN listingOffering) "; 
 			temporalFilter = temporalFilter.format(temporalFilter, startDate, endDate, endDate, startDate); 
 			query += temporalFilter; 
 		}
@@ -689,7 +689,7 @@ public class MySqlDAO {
 		query = query.format(query, postalCode, street, province, city, country, apartmentSuite); 
 		
 		if(!timeWindow.equals("")) {
-			String temporalFilter = "AND (lid, offeringDate) IN (SELECT lid, offeringDate FROM (SELECT lid FROM listingOffering WHERE offeringDate between '%s' AND '%s' GROUP BY lid HAVING count(offeringDate)>=(DATEDIFF('%s', '%s') + 1)) AS passTemporal NATURAL JOIN listingOffering) "; 
+			String temporalFilter = "AND (lid, offeringDate) IN (SELECT lid, offeringDate FROM (SELECT lid FROM listingOffering WHERE isAvailable=true AND offeringDate between '%s' AND '%s' GROUP BY lid HAVING count(offeringDate)>=(DATEDIFF('%s', '%s') + 1)) AS passTemporal NATURAL JOIN listingOffering) "; 
 			temporalFilter = temporalFilter.format(temporalFilter, startDate, endDate, endDate, startDate); 
 			query += temporalFilter; 
 		}
@@ -800,6 +800,38 @@ public class MySqlDAO {
 				+ "GROUP BY SIN HAVING count(lid)/(SELECT count(lid) FROM listingHasAddress WHERE country='%s' AND city='%s' GROUP BY country, city) > 0.1"; 
 		query = query.format(query, country, city, country, city, country, city); 
 		return this.st.executeQuery(query);
+	}
+
+	public ResultSet rankRentersByBookings(String timeWindow, String city) throws SQLException {
+		String startDate = ""; 
+		String endDate = ""; 
+		
+		String[] temp = timeWindow.split(","); 
+		startDate = temp[0]; 
+		endDate = temp[1]; 
+		
+		
+		String query = "SELECT SIN, uname, count(bid) FROM user NATURAL JOIN renter NATURAL JOIN renterBookBooking NATURAL JOIN bookingAssociatedWithOffering NATURAL JOIN listingHasAddress "; 
+		String temporalFilter = "WHERE offeringDate between '%s' AND '%s' "; 
+		temporalFilter = temporalFilter.format(temporalFilter, startDate, endDate); 
+		query += temporalFilter; 
+		
+		if(!city.equals("")) {
+			String cityConstraint = "AND city='%s' "; 
+			cityConstraint = cityConstraint.format(cityConstraint, city); 
+			query += cityConstraint; 
+		}
+		
+		
+		query = query + "GROUP BY SIN "; 
+		
+		if(!city.equals("")) {
+			query += "HAVING count(bid) >= 2 "; 
+		}
+		
+		query += "ORDER BY count(bid) DESC "; 
+		
+		return this.st.executeQuery(query); 
 	}
 
 	
