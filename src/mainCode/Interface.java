@@ -162,6 +162,42 @@ public class Interface {
 			
 		};
 		
+		ActionListener findBookingByLidListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showFindBookingByLidPage(); 
+			}
+			
+		};
+		
+		ActionListener findBookingBySINListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showFindBookingBySINPage(); 
+			}
+			
+		};
+		
+		ActionListener findCommentsByLidListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showFindCommentsByLidPage(); 
+			}
+			
+		};
+		
+		ActionListener findCommentsBySINListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showFindCommentsBySINPage(); 
+			}
+			
+		};
+		
 		ActionListener findListingByAddressListener = new ActionListener() {
 
 			@Override
@@ -170,6 +206,8 @@ public class Interface {
 			}
 			
 		};
+		
+		
 		
 		ActionListener reportNumberOfBookingsByCityListener = new ActionListener() {
 
@@ -328,6 +366,22 @@ public class Interface {
 	    findListingByAddress.addActionListener(findListingByAddressListener); 
 	    panel.add(findListingByAddress); 
 	    
+	    JButton findBookingByLid = new JButton("Find booking by lid");
+	    findBookingByLid.addActionListener(findBookingByLidListener); 
+	    panel.add(findBookingByLid); 
+	    
+	    JButton findBookingBySIN = new JButton("Find booking by SIN");
+	    findBookingBySIN.addActionListener(findBookingBySINListener); 
+	    panel.add(findBookingBySIN); 
+	    
+	    JButton findCommentsByLid = new JButton("Find comments by Lid");
+	    findCommentsByLid.addActionListener(findCommentsByLidListener); 
+	    panel.add(findCommentsByLid); 
+	    
+	    JButton findCOmmentsBySIN = new JButton("Find comments by SIN");
+	    findCOmmentsBySIN.addActionListener(findCommentsBySINListener); 
+	    panel.add(findCOmmentsBySIN); 
+	    
 	    JLabel reports = new JLabel("Reports"); 
 	    panel.add(reports); 
 	    
@@ -358,6 +412,266 @@ public class Interface {
 	    JButton reportUsersWithLargestCancellations = new JButton("Check the Renters and Hosts with the largest amount of cancellations");
 	    reportUsersWithLargestCancellations.addActionListener(reportUsersWithLargestCancellationsListener); 
 	    panel.add(reportUsersWithLargestCancellations); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showFindCommentsBySINPage() {
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterSIN = new JLabel("Enter the SIN the person being commented on: "); 
+	    panel.add(enterSIN); 
+	    TextField SIN = new TextField(50); 
+	    panel.add(SIN); 
+	    
+	    JLabel success = new JLabel("Fill out all the neccessary info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.findCommentsBySIN(SIN.getText()); 
+					showComments(rs); 
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	}
+	
+	public static void showFindCommentsByLidPage() {
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterLid = new JLabel("<HTML>Enter the Listing Id of the listing you want to check the comments on<HTML>: "); 
+	    panel.add(enterLid); 
+	    TextField lid = new TextField(50); 
+	    panel.add(lid); 
+	    
+	    JLabel success = new JLabel("Fill out all the neccessary info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.findCommentsByLid(lid.getText()); 
+					showComments(rs); 
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	}
+	
+	public static void showComments(ResultSet rs) {
+		
+		JFrame frame = new JFrame("new result");
+	    frame.setSize(1280,720);
+	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
+	    
+//	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 5)); 
+	    
+	    JScrollPane scroller = new JScrollPane(panel); 
+	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    frame.add(mainPanel, BorderLayout.NORTH);
+	    frame.add(scroller, BorderLayout.CENTER);
+	    
+	    
+	    //    lid,latitude,longitude,price, type, postalCode, apartmentSuite, city, country
+	    
+	    JLabel sinTitle = new JLabel("SIN"); 
+	    panel.add(sinTitle); 
+	    
+	    JLabel usernameTitle = new JLabel("username"); 
+	    panel.add(usernameTitle); 
+	    
+	    JLabel ratingTitle = new JLabel("<HTML>rating<HTML>"); 
+	    panel.add(ratingTitle); 
+	    
+	    JLabel contentTitle = new JLabel("<HTML>content<HTML>"); 
+	    panel.add(contentTitle); 
+	    
+	    JLabel lidTitle = new JLabel("<HTML>Commented on<HTML>"); 
+	    panel.add(lidTitle); 
+	    
+	    try {
+			while(rs.next()) {
+				JLabel sin = new JLabel(rs.getString("SIN")); 
+			    panel.add(sin); 
+			    JLabel username = new JLabel(rs.getString("uname")); 
+			    panel.add(username); 
+			    JLabel rating = new JLabel(rs.getString("rating")); 
+			    panel.add(rating); 
+			    JLabel content = new JLabel(rs.getString("content")); 
+			    panel.add(content); 
+			    JLabel commentDate = new JLabel(rs.getString("commentDate")); 
+			    panel.add(commentDate); 
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showFindBookingBySINPage() {
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterSIN = new JLabel("Enter the SIN of the renters: "); 
+	    panel.add(enterSIN); 
+	    TextField SIN = new TextField(50); 
+	    panel.add(SIN); 
+	    
+	    JLabel success = new JLabel("Fill out all the neccessary info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.findBookingBySIN(SIN.getText()); 
+					showBookings(rs); 
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	}
+	
+	
+	
+	public static void showFindBookingByLidPage() {
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterLid = new JLabel("Enter Listing Id: "); 
+	    panel.add(enterLid); 
+	    TextField lid = new TextField(50); 
+	    panel.add(lid); 
+	    
+	    JLabel success = new JLabel("Fill out all the neccessary info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.findBookingByLid(lid.getText()); 
+					showBookings(rs); 
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	}
+	
+	public static void showBookings(ResultSet rs) {
+		
+		JFrame frame = new JFrame("new result");
+	    frame.setSize(1280,720);
+	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
+	    
+//	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 5)); 
+	    
+	    JScrollPane scroller = new JScrollPane(panel); 
+	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    frame.add(mainPanel, BorderLayout.NORTH);
+	    frame.add(scroller, BorderLayout.CENTER);
+	    
+	    
+	    //    lid,latitude,longitude,price, type, postalCode, apartmentSuite, city, country
+	    
+	    JLabel sinTitle = new JLabel("SIN"); 
+	    panel.add(sinTitle); 
+	    
+	    JLabel usernameTitle = new JLabel("username"); 
+	    panel.add(usernameTitle); 
+	    
+	    JLabel numBookingsTitle = new JLabel("<HTML>booking id<HTML>"); 
+	    panel.add(numBookingsTitle); 
+	    
+	    JLabel offeringDateTitle = new JLabel("<HTML>Offering Date<HTML>"); 
+	    panel.add(offeringDateTitle); 
+	    
+	    JLabel lidTitle = new JLabel("<HTML>Listing Id<HTML>"); 
+	    panel.add(lidTitle); 
+	    
+	    try {
+			while(rs.next()) {
+				JLabel sin = new JLabel(rs.getString("SIN")); 
+			    panel.add(sin); 
+			    JLabel username = new JLabel(rs.getString("uname")); 
+			    panel.add(username); 
+			    JLabel bid = new JLabel(rs.getString("bid")); 
+			    panel.add(bid); 
+			    JLabel offeringDate = new JLabel(rs.getString("offeringDate")); 
+			    panel.add(offeringDate); 
+			    JLabel lid = new JLabel(rs.getString("lid")); 
+			    panel.add(lid); 
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
 	    
 	    frame.setVisible(true);
 	    

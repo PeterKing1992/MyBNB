@@ -340,7 +340,7 @@ public class MySqlDAO {
 	}
 
 	public int addListingOffering(String SIN, String lid, String offeringDate, String price) throws SQLException {
-		if(isBeforeToday(offeringDate)) return -1; 
+//		if(isBeforeToday(offeringDate)) return -1; 
 		String query = "select * from hostPostListing WHERE SIN='%s' AND lid=%s; "; 
 		query = query.format(query, SIN, lid);  
 		ResultSet rs = this.st.executeQuery(query); 
@@ -356,7 +356,7 @@ public class MySqlDAO {
 	}
 
 	public int bookListing(String SIN, String lid, String offeringDate) throws SQLException {
-		if(isBeforeToday(offeringDate)) return -1; 
+//		if(isBeforeToday(offeringDate)) return -1; 
 		String query = "select * from bookingAssociatedWithOffering WHERE lid=%s AND offeringDate=STR_TO_DATE('%s', "; 
 		query = query.format(query, lid, offeringDate);  
 		query += "'%Y-%m-%d') AND bid NOT IN (select bid from renterCancelBooking) AND bid NOT IN (select bid from hostCancelBooking); "; 
@@ -439,7 +439,7 @@ public class MySqlDAO {
 	}
 
 	public int changeListingAvailability(String SIN, String lid, String offeringDate, String available) throws SQLException {
-		if(isBeforeToday(offeringDate)) return -1; 
+//		if(isBeforeToday(offeringDate)) return -1; 
 		String query = "SELECT * from hostPostListing where SIN = '%s' AND lid=%s ; "; 
 		query = query.format(query, SIN, lid); 
 		ResultSet rs = this.st.executeQuery(query); 
@@ -473,7 +473,7 @@ public class MySqlDAO {
 	}
 
 	public int changeListingPrice(String SIN, String lid, String offeringDate, String price) throws SQLException {
-		if(isBeforeToday(offeringDate)) return -1; 
+//		if(isBeforeToday(offeringDate)) return -1; 
 		String query = "SELECT * from hostPostListing where SIN = '%s' AND lid=%s ; "; 
 		query = query.format(query, SIN, lid); 
 		ResultSet rs = this.st.executeQuery(query); 
@@ -842,6 +842,30 @@ public class MySqlDAO {
 	public ResultSet reportRentersWithLargestCancellations() throws SQLException {
 		String query = "SELECT SIN, uname, count(bid) FROM user NATURAL JOIN renter NATURAL JOIN renterCancelBooking GROUP BY SIN HAVING count(bid) >= all(select count(bid) FROM renter NATURAL JOIN renterCancelBooking GROUP BY SIN) "; 
 		return this.st.executeQuery(query);
+	}
+
+	public ResultSet findBookingByLid(String lid) throws SQLException {
+		String query = "SELECT SIN, uname, bid, offeringDate, lid FROM user NATURAL JOIN renterBookBooking NATURAL JOIN bookingAssociatedWithOffering WHERE lid=%s AND bid NOT IN (SELECT bid FROM renterCancelBooking) AND bid NOT IN (SELECT bid FROM hostCancelBooking) ORDER BY bookDate DESC"; 
+		query = query.format(query, lid); 
+		return this.st.executeQuery(query); 
+	}
+
+	public ResultSet findBookingBySIN(String SIN) throws SQLException {
+		String query = "SELECT SIN, uname, bid, offeringDate, lid FROM user NATURAL JOIN renterBookBooking NATURAL JOIN bookingAssociatedWithOffering WHERE SIN='%s' AND bid NOT IN (SELECT bid FROM renterCancelBooking) AND bid NOT IN (SELECT bid FROM hostCancelBooking) ORDER BY bookDate DESC"; 
+		query = query.format(query, SIN); 
+		return this.st.executeQuery(query); 
+	}
+
+	public ResultSet findCommentsByLid(String lid) throws SQLException {
+		String query = "SELECT SIN, uname, rating, content, commentDate FROM user u JOIN renterCommentOnListing r ON u.SIN=r.renter WHERE r.lid=%s ORDER BY r.commentDate DESC"; 
+		query = query.format(query, lid); 
+		return this.st.executeQuery(query); 
+	}
+
+	public ResultSet findCommentsBySIN(String SIN) throws SQLException {
+		String query = "SELECT SIN, uname, rating, content, commentDate FROM user u JOIN renterCommentOnHost r ON u.SIN=r.renter WHERE r.host=%s ORDER BY r.commentDate DESC"; 
+		query = query.format(query, SIN); 
+		return this.st.executeQuery(query); 
 	}
 
 	
