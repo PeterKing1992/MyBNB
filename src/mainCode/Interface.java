@@ -225,6 +225,15 @@ public class Interface {
 			
 		};
 		
+		ActionListener reportUsersWithLargestCancellationsListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showReportUsersWithLargestCancellationsPage();  
+			}
+			
+		};
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
@@ -345,6 +354,107 @@ public class Interface {
 	    JButton reportRentersRank = new JButton("Check Rank of Renters Based on their Total Number of bookings within a period");
 	    reportRentersRank.addActionListener(reportRentersRankListener); 
 	    panel.add(reportRentersRank); 
+	    
+	    JButton reportUsersWithLargestCancellations = new JButton("Check the Renters and Hosts with the largest amount of cancellations");
+	    reportUsersWithLargestCancellations.addActionListener(reportUsersWithLargestCancellationsListener); 
+	    panel.add(reportUsersWithLargestCancellations); 
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showUsersCancellations(ResultSet rs) {
+		
+		JFrame frame = new JFrame("new result");
+	    frame.setSize(1280,720);
+	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
+	    
+//	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 3)); 
+	    
+	    JScrollPane scroller = new JScrollPane(panel); 
+	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    frame.add(mainPanel, BorderLayout.NORTH);
+	    frame.add(scroller, BorderLayout.CENTER);
+	    
+	    
+	    //    lid,latitude,longitude,price, type, postalCode, apartmentSuite, city, country
+	    
+	    JLabel sinTitle = new JLabel("SIN"); 
+	    panel.add(sinTitle); 
+	    
+	    JLabel usernameTitle = new JLabel("username"); 
+	    panel.add(usernameTitle); 
+	    
+	    JLabel numBookingsTitle = new JLabel("<HTML>Number Of Cancellations<HTML>"); 
+	    panel.add(numBookingsTitle); 
+	    
+	    try {
+			while(rs.next()) {
+				JLabel sin = new JLabel(rs.getString("SIN")); 
+			    panel.add(sin); 
+			    JLabel username = new JLabel(rs.getString("uname")); 
+			    panel.add(username); 
+			    JLabel numBookings = new JLabel(rs.getString("count(bid)")); 
+			    panel.add(numBookings); 
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showReportUsersWithLargestCancellationsPage() {
+		 
+		
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 1)); 
+	    frame.add(panel); 
+	    
+	    ActionListener submitHostsListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.reportHostsWithLargestCancellations();  
+					showUsersCancellations(rs); 
+				} catch (SQLException e1) {
+//					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+		
+		ActionListener submitRentersListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.reportRentersWithLargestCancellations();   
+					showUsersCancellations(rs); 
+				} catch (SQLException e1) {
+//					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+	    
+	    JButton submitHosts = new JButton("Show Hosts With Largest Number of Cancellations");
+	    submitHosts.addActionListener(submitHostsListener);
+	    panel.add(submitHosts); 
+	    
+	    JButton submitRenters = new JButton("Show Renters With Largest Number of Cancellations");
+	    submitRenters.addActionListener(submitRentersListener);
+	    panel.add(submitRenters); 
 	    
 	    frame.setVisible(true);
 	    

@@ -834,6 +834,16 @@ public class MySqlDAO {
 		return this.st.executeQuery(query); 
 	}
 
+	public ResultSet reportHostsWithLargestCancellations() throws SQLException {
+		String query = "SELECT SIN, uname, count(bid) FROM user NATURAL JOIN host NATURAL JOIN hostCancelBooking GROUP BY SIN HAVING count(bid) >= all(select count(bid) FROM HOST NATURAL JOIN hostCancelBooking GROUP BY SIN) "; 
+		return this.st.executeQuery(query); 
+	}
+
+	public ResultSet reportRentersWithLargestCancellations() throws SQLException {
+		String query = "SELECT SIN, uname, count(bid) FROM user NATURAL JOIN renter NATURAL JOIN renterCancelBooking GROUP BY SIN HAVING count(bid) >= all(select count(bid) FROM renter NATURAL JOIN renterCancelBooking GROUP BY SIN) "; 
+		return this.st.executeQuery(query);
+	}
+
 	
 
     
