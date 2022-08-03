@@ -5,7 +5,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.LinkedList; 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List; 
 
 public class MySqlDAO {
 	public Connection conn;
@@ -893,6 +895,31 @@ public class MySqlDAO {
 				+ "WHERE SQRT(POWER(latitude-%s, 2) + POWER(latitude-%s, 2)) < 30 GROUP BY lid ORDER BY count(bid) DESC LIMIT 5) AS T NATURAL JOIN listingOfferAmenity NATURAL JOIN amenity";
 		query = query.format(query, latitude, longitude); 
 		return this.st.executeQuery(query); 
+	}
+
+	public List getTopNps(ArrayList<String> nps) throws SQLException {
+		List topNps = new ArrayList<String>(); 
+		
+		String query = "DROP TABLE IF EXISTS nounPhrase ";  
+		this.st.execute(query); 
+		
+		query = "CREATE TABLE nounPhrase(nounId INT AUTO_INCREMENT PRIMARY KEY, phrase TEXT NOT NULL)"; 
+		this.st.execute(query); 
+		
+		for(String np: nps) {
+			query = "INSERT INTO nounPhrase(phrase) VALUES('%s')"; 
+			query = query.format(query, np); 
+			this.st.execute(query); 
+		}
+		
+		query = "SELECT phrase FROM nounPhrase WHERE phrase NOT LIKE 'I' GROUP BY phrase ORDER BY count(nounId) DESC LIMIT 10"; 
+		ResultSet rs = this.st.executeQuery(query); 
+		
+		while(rs.next()) {
+			topNps.add(rs.getString("phrase")); 
+		}
+		
+		return topNps; 
 	}
 
 	

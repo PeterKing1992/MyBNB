@@ -1,8 +1,18 @@
 package mainCode;
 import java.awt.event.*;
+
+import edu.stanford.nlp.ling.LabeledWord;
+import edu.stanford.nlp.simple.*;
+import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.trees.tregex.TregexMatcher;
+import edu.stanford.nlp.trees.tregex.TregexPattern;
+
 import java.awt.*; 
 import java.sql.*;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Properties;
 
 import javax.swing.*;
@@ -281,6 +291,15 @@ public class Interface {
 			
 		};
 		
+		ActionListener getWordCloudByLidListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showGetWordCloudByLidPage();  
+			}
+			
+		};
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
@@ -422,6 +441,10 @@ public class Interface {
 	    reportUsersWithLargestCancellations.addActionListener(reportUsersWithLargestCancellationsListener); 
 	    panel.add(reportUsersWithLargestCancellations); 
 	    
+	    JButton getWordCloudByLid = new JButton("Get the word clouds for a listing");
+	    getWordCloudByLid.addActionListener(getWordCloudByLidListener); 
+	    panel.add(getWordCloudByLid); 
+	    
 	    JLabel hostToolKit = new JLabel("Host Tool Kit"); 
 	    panel.add(hostToolKit); 
 	    
@@ -432,6 +455,104 @@ public class Interface {
 	    frame.setVisible(true);
 	    
 	    
+	}
+
+	private static ArrayList<String> getNounPhrases(Tree parse) {
+	    ArrayList<String> result = new ArrayList<>();
+	    TregexPattern pattern = TregexPattern.compile("@NP");
+	    TregexMatcher matcher = pattern.matcher(parse);
+	    while (matcher.find()) {
+	        Tree match = matcher.getMatch();
+	        ArrayList<Tree> leaves = (ArrayList<Tree>) match.getLeaves();
+	        String nounPhrase = ""; 
+	        for(Tree leaf: leaves) {
+	        	nounPhrase += leaf.toString() + " "; 
+	        }
+	        result.add(nounPhrase);
+	        ArrayList<LabeledWord> labeledYield = (ArrayList<LabeledWord>) match.labeledYield();
+	    }
+	    return result;
+	}
+	
+	public static void showWordCloudPage(ResultSet rs) {
+		
+		JFrame frame = new JFrame("new result");
+	    frame.setSize(1280,720);
+	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
+	    
+//	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
+	    
+	    JPanel panel = new JPanel(); 
+	    
+	    JScrollPane scroller = new JScrollPane(panel); 
+	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    frame.add(mainPanel, BorderLayout.NORTH);
+	    frame.add(scroller, BorderLayout.CENTER);
+	    
+	    ArrayList<String> allNps = new ArrayList<String>(); 
+	    ArrayList<String> topNps = new ArrayList<String>(); 
+	    
+	    try {
+			while(rs.next()) {
+				String content = rs.getString("content"); 
+				content = "Cerk at the front desk very nice, I think I also love the design of the balcony. Nice beach view"; 
+				Tree tree = new Sentence(content).parse(); 
+				ArrayList<String> nps = getNounPhrases(tree); 
+				allNps.addAll(nps); 
+			}
+			
+			topNps = (ArrayList<String>) dao.getTopNps(allNps); 
+			
+			for(String nounPhrase: topNps) {
+				JLabel newLabel = new JLabel(nounPhrase + ","); 
+				panel.add(newLabel); 
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    
+	    frame.setVisible(true);
+	    
+	    
+	}
+	
+	public static void showGetWordCloudByLidPage() {
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterLid = new JLabel("Enter the Listing Id of the listing you want to check: "); 
+	    panel.add(enterLid); 
+	    TextField lid = new TextField(50); 
+	    panel.add(lid); 
+	    
+	    JLabel success = new JLabel("Fill out all the neccessary info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.findCommentsByLid(lid.getText()); 
+					showWordCloudPage(rs); 
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
 	}
 	
 	public static void showFindCommentsBySINPage() {
