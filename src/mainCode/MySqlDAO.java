@@ -4,7 +4,8 @@ import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.Period; 
+import java.time.Period;
+import java.util.LinkedList; 
 
 public class MySqlDAO {
 	public Connection conn;
@@ -865,6 +866,32 @@ public class MySqlDAO {
 	public ResultSet findCommentsBySIN(String SIN) throws SQLException {
 		String query = "SELECT SIN, uname, rating, content, commentDate FROM user u JOIN renterCommentOnHost r ON u.SIN=r.renter WHERE r.host=%s ORDER BY r.commentDate DESC"; 
 		query = query.format(query, SIN); 
+		return this.st.executeQuery(query); 
+	}
+
+	public double suggestPriceForListing(String SIN, String latitude, String longitude) throws SQLException {
+		String query = "SELECT * FROM hostPostListing WHERE SIN='%s'"; 
+		query = query.format(query, SIN); 
+		ResultSet rs = this.st.executeQuery(query); 
+		if(rs.next()) {
+			return -1; //User has done this before
+		}
+
+		query = "SELECT AVG(price) FROM listingOffering NATURAL JOIN listingAtLocation WHERE SQRT(POWER((latitude-%s), 2) + POWER((latitude-%s), 2)) < 30";
+		query = query.format(query, latitude, longitude); 
+		rs = this.st.executeQuery(query); 
+		
+		if(rs.next()) {
+			return rs.getDouble("AVG(price)"); 
+		}
+		return 0; 
+	}
+
+	public ResultSet suggestAmenitiesForListing(String SIN, String latitude, String longitude) throws SQLException {
+
+		String query = "SELECT DISTINCT amenityDescription FROM (SELECT lid, count(bid) FROM bookingAssociatedWithOffering NATURAL JOIN listingOffering NATURAL JOIN listingAtLocation "
+				+ "WHERE SQRT(POWER(latitude-%s, 2) + POWER(latitude-%s, 2)) < 30 GROUP BY lid ORDER BY count(bid) DESC LIMIT 5) AS T NATURAL JOIN listingOfferAmenity NATURAL JOIN amenity";
+		query = query.format(query, latitude, longitude); 
 		return this.st.executeQuery(query); 
 	}
 

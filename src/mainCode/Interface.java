@@ -272,6 +272,15 @@ public class Interface {
 			
 		};
 		
+		ActionListener getSuggestionsForListingListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showGetSuggestionsForListingPage();  
+			}
+			
+		};
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
@@ -413,6 +422,13 @@ public class Interface {
 	    reportUsersWithLargestCancellations.addActionListener(reportUsersWithLargestCancellationsListener); 
 	    panel.add(reportUsersWithLargestCancellations); 
 	    
+	    JLabel hostToolKit = new JLabel("Host Tool Kit"); 
+	    panel.add(hostToolKit); 
+	    
+	    JButton getSuggestionsForListing = new JButton("Get Suggestions For Your Listing! ");
+	    getSuggestionsForListing.addActionListener(getSuggestionsForListingListener); 
+	    panel.add(getSuggestionsForListing); 
+	    
 	    frame.setVisible(true);
 	    
 	    
@@ -450,6 +466,85 @@ public class Interface {
 	    JButton submitForm = new JButton("Submit");
 	    submitForm.addActionListener(submitDeleteUser);
 	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	}
+	
+	public static void showGetSuggestionsForListingPage() {
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterSIN = new JLabel("Enter your SIN: "); 
+	    panel.add(enterSIN); 
+	    TextField SIN = new TextField(50); 
+	    panel.add(SIN); 
+	    
+	    JLabel enterLatitude = new JLabel("Enter your listing's latitude: "); 
+	    panel.add(enterLatitude); 
+	    TextField latitude = new TextField(50); 
+	    panel.add(latitude); 
+	    
+	    JLabel enterLongitude = new JLabel("Enter your listing's longitude: "); 
+	    panel.add(enterLongitude); 
+	    TextField longitude = new TextField(50); 
+	    panel.add(longitude); 
+	    
+	    JLabel success = new JLabel("<HTML>Fill out all the neccessary info on this form to execute operation<HTML>"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+	    	
+	    	@Override
+	    	public void actionPerformed(ActionEvent e) {
+	    		try {
+	    			JFrame smallFrame = new JFrame("Result"); 
+	    			smallFrame.setSize(1280,720);
+	    			JPanel smallPanel = new JPanel(new GridLayout(0,2)); 
+	    			smallFrame.add(smallPanel); 
+	    			
+	    			JLabel suggestedPriceCol = new JLabel("Suggeted Price"); 
+	    		    smallPanel.add(suggestedPriceCol); 
+	    		    
+	    		    JLabel suggestedAmenitiesCol = new JLabel("Suggeted Amenities"); 
+	    		    smallPanel.add(suggestedAmenitiesCol); 
+	    			
+	    			JLabel suggestedPriceTitle = new JLabel(); 
+	    			JLabel suggestedAmenitiesTitle = new JLabel(); 
+	    			
+	    			double suggestedPrice = dao.suggestPriceForListing(SIN.getText(), latitude.getText(), longitude.getText()); 
+	    			if(suggestedPrice<0) {
+	    				suggestedPriceTitle.setText("<HTML>You are not a posting a listing the first time, you should know what to do<HTML>");
+	    			}else {
+	    				suggestedPriceTitle.setText(suggestedPrice + "");
+	    			}
+	    			smallPanel.add(suggestedPriceTitle); 
+	    			
+	    			ResultSet suggestedAmenities = dao.suggestAmenitiesForListing(SIN.getText(), latitude.getText(), longitude.getText()); 
+	    			String listOfAmenities = ""; 
+	    			while(suggestedAmenities.next()){
+	    				listOfAmenities += suggestedAmenities.getString("amenityDescription") + ", "; 
+	    			}
+	    			suggestedAmenitiesTitle.setText("<HTML>" + listOfAmenities + "<HTML>"); 
+	    			smallPanel.add(suggestedAmenitiesTitle); 
+	    			
+	    			smallFrame.setVisible(true); 
+	    			
+	    		} catch (SQLException e1) {
+	    			success.setText("server error");
+	    			e1.printStackTrace();
+	    		} 
+	    	}
+	    };
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    
+	    
 	    
 	    frame.setVisible(true);
 	}
