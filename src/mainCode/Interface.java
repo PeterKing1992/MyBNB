@@ -495,7 +495,7 @@ public class Interface {
 	    try {
 			while(rs.next()) {
 				String content = rs.getString("content"); 
-				content = "Cerk at the front desk very nice, I think I also love the design of the balcony. Nice beach view"; 
+//				content = "Cerk at the front desk very nice, I think I also love the design of the balcony. Nice beach view"; 
 				Tree tree = new Sentence(content).parse(); 
 				ArrayList<String> nps = getNounPhrases(tree); 
 				allNps.addAll(nps); 
@@ -2348,10 +2348,10 @@ public class Interface {
 	    TextField lid = new TextField(50); 
 	    panel.add(lid); 
 	    
-	    JLabel enterOfferingDate = new JLabel("Enter date you want to book: "); 
-	    panel.add(enterOfferingDate); 
-	    TextField offeringDate = new TextField(50); 
-	    panel.add(offeringDate); 
+	    JLabel localDateRange = new JLabel("<HTML>Enter date range you want to book(Separate the starting and end date by comma and write date in form \"YYYY-M-d\" for example august 8th to 12th 2022 should be written as \"2022-08-08,2022-08-12\"): <HTML>"); 
+	    panel.add(localDateRange); 
+	    TextField dateRange = new TextField(50); 
+	    panel.add(dateRange); 
 	    
 	    JLabel success = new JLabel("Fill out all the info on this form to execute operation"); 
 	    panel.add(success); 
@@ -2362,9 +2362,12 @@ public class Interface {
 			public void actionPerformed(ActionEvent e) {
 				int result = 0;
 				try {
-					result = dao.bookListing(SIN.getText(), lid.getText(), offeringDate.getText());
+					result = dao.bookListing(SIN.getText(), lid.getText(), dateRange.getText());
 				} catch (SQLException e1) {
 					success.setText("server error");
+					e1.printStackTrace();
+				} catch (ParseException e1) {
+					success.setText("Date not in correct format");
 					e1.printStackTrace();
 				} 
 				if(result == 0) {
@@ -2372,7 +2375,7 @@ public class Interface {
 				}else if(result == 1){
 					success.setText("Listing already bookde on the said date");  
 				}else if(result == 2) {
-					success.setText("No listing offering found on the said date");
+					success.setText("No listing offering evailable on the said date");
 				}else if(result == -1) {
 					success.setText("Cannot have date before today");
 				}

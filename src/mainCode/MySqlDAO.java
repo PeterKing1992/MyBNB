@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List; 
 
@@ -192,7 +193,7 @@ public class MySqlDAO {
     	query = "CREATE TABLE IF NOT EXISTS bookingAssociatedWithOffering(bid INT, lid INT NOT NULL, offeringDate date NOT NULL, "
     			+ "FOREIGN KEY(lid, offeringDate) REFERENCES listingOffering(lid, offeringDate) ON DELETE CASCADE, "
     			+ "FOREIGN KEY(bid) REFERENCES booking(bid) ON DELETE CASCADE, "
-    			+ "PRIMARY KEY(bid)); "; 
+    			+ "PRIMARY KEY(bid, lid, offeringDate)); "; 
     	this.st.execute(query); 
     	
     	query = "CREATE TABLE IF NOT EXISTS renterBookBooking(SIN char(9) NOT NULL, bid INT, bookDate date NOT NULL, "
@@ -358,21 +359,18 @@ public class MySqlDAO {
 		return 0;
 	}
 
-	public int bookListing(String SIN, String lid, String offeringDate) throws SQLException {
+	public int bookListing(String SIN, String lid, String dateRange) throws SQLException, ParseException {
+		String[] dateRangeArray = dateRange.split(","); 
+		String startDate = dateRangeArray[0]; 
+		String endDate = dateRangeArray[1]; 
+		
 //		if(isBeforeToday(offeringDate)) return -1; 
-		String query = "select * from bookingAssociatedWithOffering WHERE lid=%s AND offeringDate=STR_TO_DATE('%s', "; 
-		query = query.format(query, lid, offeringDate);  
-		query += "'%Y-%m-%d') AND bid NOT IN (select bid from renterCancelBooking) AND bid NOT IN (select bid from hostCancelBooking); "; 
+		String query = "SELECT lid "
+				+ "FROM listingOffering "
+				+ "WHERE isAvailable=true AND offeringDate between '%s' AND '%s' AND lid=%s GROUP BY lid HAVING count(offeringDate)>=(DATEDIFF('%s', '%s') + 1) "; 
+		query = query.format(query, startDate, endDate, lid, endDate, startDate); 
 		ResultSet rs = this.st.executeQuery(query); 
-		if(rs.next()) {
-			return 1; 
-		}
-
-		query = "select * from listingOffering WHERE lid=%s AND offeringDate=STR_TO_DATE('%s', "; 
-		query = query.format(query, lid, offeringDate);  
-		query += "'%Y-%m-%d'); "; 
-		rs = this.st.executeQuery(query); 
-
+		
 		if(!rs.next()) {
 			return 2; 
 		}
@@ -386,15 +384,28 @@ public class MySqlDAO {
 		query += "'%Y-%m-%d')); "; 
 		this.st.execute(query);
 		
-		query = "INSERT INTO bookingAssociatedWithOffering(bid, lid, offeringDate) VALUES(last_insert_id(), %s, STR_TO_DATE('%s', ";
-		query = query.format(query, lid, offeringDate); 
-		query += "'%Y-%m-%d'));"; 
-		this.st.execute(query);
-
-		query = "UPDATE listingOffering SET isAvailable=false WHERE lid=%s AND offeringDate=STR_TO_DATE('%s', "; 
-		query = query.format(query, lid, offeringDate);  
-		query += "'%Y-%m-%d'); "; 
-		this.st.execute(query);
+		java.util.Date start = new SimpleDateFormat("yyyy-MM-dd").parse(startDate); 
+		java.util.Date end = new SimpleDateFormat("yyyy-MM-dd").parse(endDate); 
+		
+		while(start.getTime() <= end.getTime()) {
+		
+			String offeringDate = new SimpleDateFormat("yyyy-MM-dd").format(start.getTime()); 
+			
+			query = "INSERT INTO bookingAssociatedWithOffering(bid, lid, offeringDate) VALUES(last_insert_id(), %s, STR_TO_DATE('%s', ";
+			query = query.format(query, lid, offeringDate); 
+			query += "'%Y-%m-%d'));"; 
+			this.st.execute(query);
+	
+			query = "UPDATE listingOffering SET isAvailable=false WHERE lid=%s AND offeringDate=STR_TO_DATE('%s', "; 
+			query = query.format(query, lid, offeringDate);  
+			query += "'%Y-%m-%d'); "; 
+			this.st.execute(query);
+			
+			Calendar cal = Calendar.getInstance(); 
+			cal.setTime(start); 
+			cal.add(Calendar.DATE, 1); 
+			start = cal.getTime(); 
+		}
 		
 		return 0;
 	}
@@ -907,12 +918,16 @@ public class MySqlDAO {
 		this.st.execute(query); 
 		
 		for(String np: nps) {
-			query = "INSERT INTO nounPhrase(phrase) VALUES('%s')"; 
-			query = query.format(query, np); 
-			this.st.execute(query); 
+//			if(!np.equals("I") && !np.equals("i")) {				
+				query = "INSERT INTO nounPhrase(phrase) VALUES('%s')"; 
+				query = query.format(query, np); 
+				this.st.execute(query); 
+//			}
 		}
 		
-		query = "SELECT phrase FROM nounPhrase WHERE phrase NOT LIKE 'I' GROUP BY phrase ORDER BY count(nounId) DESC LIMIT 10"; 
+		query = "SELECT phrase FROM nounPhrase WHERE phrase NOT LIKE 'I ' AND phrase NOT LIKE 'you ' AND phrase NOT LIKE 'we ' AND phrase NOT LIKE 'me ' AND "
+				+ "phrase NOT LIKE 'us ' AND phrase NOT Like 'he ' AND phrase NOT LIKE 'she '"
+				+ " GROUP BY phrase ORDER BY count(nounId) DESC LIMIT 10"; 
 		ResultSet rs = this.st.executeQuery(query); 
 		
 		while(rs.next()) {
