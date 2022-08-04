@@ -937,6 +937,13 @@ public class MySqlDAO {
 		return topNps; 
 	}
 
+	public ResultSet findListingBySIN(String SIN) throws SQLException {
+		String query = "SELECT lid, postalCode, street, city, province, country, apartmentSuite, latitude, longitude, ltype "
+				+ "FROM hostPostListing NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL JOIN listingAtLocation WHERE SIN='%s' "; 
+		query = query.format(query, SIN); 
+		return this.st.executeQuery(query); 
+	}
+
 	
 
     

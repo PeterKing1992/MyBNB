@@ -300,6 +300,15 @@ public class Interface {
 			
 		};
 		
+		ActionListener findListingBySINListener = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showFindListingBySINPage();  
+			}
+			
+		};
+		
 		JFrame frame = new JFrame("MyBNB");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setSize(1920,1080);
@@ -394,6 +403,10 @@ public class Interface {
 	    findListingByAddress.addActionListener(findListingByAddressListener); 
 	    panel.add(findListingByAddress); 
 	    
+	    JButton findListingBySIN = new JButton("Find listing by host");
+	    findListingBySIN.addActionListener(findListingBySINListener); 
+	    panel.add(findListingBySIN); 
+	    
 	    JButton findBookingByLid = new JButton("Find booking by lid");
 	    findBookingByLid.addActionListener(findBookingByLidListener); 
 	    panel.add(findBookingByLid); 
@@ -472,6 +485,130 @@ public class Interface {
 	        ArrayList<LabeledWord> labeledYield = (ArrayList<LabeledWord>) match.labeledYield();
 	    }
 	    return result;
+	}
+	
+	public static void showFindListingBySINPage() {
+		JFrame frame = new JFrame("new operation");
+	    frame.setSize(1280,720);
+	    
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
+	    frame.add(panel); 
+	    
+	    JLabel enterSIN = new JLabel("Enter the SIN of the host you want to find the listing of: "); 
+	    panel.add(enterSIN); 
+	    TextField SIN = new TextField(50); 
+	    panel.add(SIN); 
+	    
+	    JLabel success = new JLabel("Fill out all the neccessary info on this form to execute operation"); 
+	    panel.add(success); 
+	    
+	    ActionListener submitDeleteUser = new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					ResultSet rs = dao.findListingBySIN(SIN.getText()); 
+					showLisitngPage(rs); 
+				} catch (SQLException e1) {
+					success.setText("server error");
+					e1.printStackTrace();
+				} 
+			}
+
+		};
+	    
+	    JButton submitForm = new JButton("Submit");
+	    submitForm.addActionListener(submitDeleteUser);
+	    panel.add(submitForm); 
+	    
+	    frame.setVisible(true);
+	}
+	
+	private static void showLisitngPage(ResultSet rs) {
+		JFrame frame = new JFrame("new result");
+	    frame.setSize(1280,720);
+	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
+	    
+//	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
+	    
+	    JPanel panel = new JPanel(new GridLayout(0,10)); 
+	    
+	    JScrollPane scroller = new JScrollPane(panel); 
+	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	    frame.add(mainPanel, BorderLayout.NORTH);
+	    frame.add(scroller, BorderLayout.CENTER);
+	    
+	    JLabel LidTitile = new JLabel("lid"); 
+	    panel.add(LidTitile); 
+	    
+	    JLabel postalCodeTitle = new JLabel("postalCode"); 
+	    panel.add(postalCodeTitle); 
+	    
+	    JLabel streetTitle = new JLabel("Street"); 
+	    panel.add(streetTitle); 
+	    
+	    JLabel cityTitle = new JLabel("City"); 
+	    panel.add(cityTitle); 
+	    
+	    JLabel provinceTitle = new JLabel("Province"); 
+	    panel.add(provinceTitle); 
+	    
+	    JLabel countryTitle = new JLabel("country"); 
+	    panel.add(countryTitle); 
+	    
+	    JLabel apartmentSuiteTitle = new JLabel("apartment/suite"); 
+	    panel.add(apartmentSuiteTitle); 
+	    
+	    JLabel latitudeTitle = new JLabel("latitude"); 
+	    panel.add(latitudeTitle); 
+	    
+	    JLabel longitudeTitle = new JLabel("longitude"); 
+	    panel.add(longitudeTitle); 
+	    
+	    JLabel typeTitle = new JLabel("type"); 
+	    panel.add(typeTitle); 
+	    
+	    try {
+			while(rs.next()) {
+				JLabel lid = new JLabel(rs.getString("lid")); 
+			    panel.add(lid); 
+			    
+			    JLabel postalCode = new JLabel(rs.getString("postalCode")); 
+			    panel.add(postalCode); 
+			    
+			    JLabel street = new JLabel(rs.getString("street")); 
+			    panel.add(street); 
+			    
+			    JLabel city = new JLabel(rs.getString("city")); 
+			    panel.add(city); 
+			    
+			    JLabel province = new JLabel(rs.getString("province")); 
+			    panel.add(province); 
+			    
+			    JLabel country = new JLabel(rs.getString("country")); 
+			    panel.add(country); 
+			    
+			    JLabel apartmentSuite = new JLabel(rs.getString("apartmentSuite")); 
+			    panel.add(apartmentSuite); 
+			    
+			    JLabel latitude = new JLabel(rs.getString("latitude")); 
+			    panel.add(latitude); 
+			    
+			    JLabel longitude = new JLabel(rs.getString("longitude")); 
+			    panel.add(longitude); 
+			    
+			    JLabel type = new JLabel(rs.getString("ltype")); 
+			    panel.add(type); 
+			    
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    
+	    
+	    frame.setVisible(true);
 	}
 	
 	public static void showWordCloudPage(ResultSet rs) {
