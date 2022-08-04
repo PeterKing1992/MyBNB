@@ -590,7 +590,7 @@ public class MySqlDAO {
 		rankStatement = rankStatement.format(rankStatement, latitude, longitude); 
 		
 		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities "
-				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL JOIN listingOfferAmenity NATURAL JOIN amenity "
+				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL LEFT OUTER JOIN listingOfferAmenity NATURAL LEFT OUTER JOIN amenity "
 				+ "WHERE SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2))<=%s AND isAvailable=true ";
 		query = query.format(query, latitude, longitude, distanceDefault); 
 		
@@ -655,7 +655,7 @@ public class MySqlDAO {
 		rankStatement = rankStatement.format(rankStatement, postalCode); 
 		
 		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities "
-				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL JOIN listingOfferAmenity NATURAL JOIN amenity "
+				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL LEFT OUTER JOIN listingOfferAmenity NATURAL LEFT OUTER JOIN amenity "
 				+ "WHERE ABS(HEX(postalCode) - HEX('%s'))<=%s AND isAvailable=true ";
 		query = query.format(query, postalCode, distanceDefault); 
 		
@@ -711,7 +711,7 @@ public class MySqlDAO {
 		}
 		
 		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities "
-				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL JOIN listingOfferAmenity NATURAL JOIN amenity "
+				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL LEFT OUTER JOIN listingOfferAmenity NATURAL LEFT OUTER JOIN amenity "
 				+ "WHERE postalCode='%s' AND street='%s' AND province='%s' AND city='%s' AND country='%s' AND apartmentSuite=%s AND isAvailable=true ";
 		query = query.format(query, postalCode, street, province, city, country, apartmentSuite); 
 		
