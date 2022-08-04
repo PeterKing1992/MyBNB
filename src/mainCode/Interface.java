@@ -1812,6 +1812,11 @@ public class Interface {
 	    TextField priceRange = new TextField(50); 
 	    panel.add(priceRange); 
 	    
+	    JLabel enterType = new JLabel("<HTML>Enter the type of listing you want to have(e.g. \"house\"): <HTML>"); 
+	    panel.add(enterType); 
+	    TextField type = new TextField(50); 
+	    panel.add(type); 
+	    
 	    JLabel success = new JLabel("Fill out all the neccessary info on this form to execute operation"); 
 	    panel.add(success); 
 	    
@@ -1820,7 +1825,7 @@ public class Interface {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					ResultSet rs = dao.findListingByAddress(postalCode.getText(), street.getText(), province.getText(), city.getText(), country.getText(), apartmentSuite.getText(), timeWindow.getText(), amenities.getText(), priceRange.getText()); 
+					ResultSet rs = dao.findListingByAddress(postalCode.getText(), street.getText(), province.getText(), city.getText(), country.getText(), apartmentSuite.getText(), timeWindow.getText(), amenities.getText(), priceRange.getText(), type.getText()); 
 					showListingQueryResultPage(rs); 
 				} catch (SQLException e1) {
 					success.setText("server error");
@@ -1877,6 +1882,11 @@ public class Interface {
 	    TextField priceRange = new TextField(50); 
 	    panel.add(priceRange); 
 	    
+	    JLabel enterType = new JLabel("<HTML>Enter the type of listing you want to have(e.g. \"house\"): <HTML>"); 
+	    panel.add(enterType); 
+	    TextField type = new TextField(50); 
+	    panel.add(type); 
+	    
 	    JLabel success = new JLabel("Fill out all the neccessary info on this form to execute operation"); 
 	    panel.add(success); 
 	    
@@ -1885,7 +1895,7 @@ public class Interface {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					ResultSet rs = dao.findListingByPostalCode(postalCode.getText(), timeWindow.getText(), distance.getText(), priceRank.getText(), amenities.getText(), priceRange.getText()); 
+					ResultSet rs = dao.findListingByPostalCode(postalCode.getText(), timeWindow.getText(), distance.getText(), priceRank.getText(), amenities.getText(), priceRange.getText(), type.getText()); 
 					showListingQueryResultPage(rs); 
 				} catch (SQLException e1) {
 					success.setText("server error");
@@ -1947,6 +1957,11 @@ public class Interface {
 	    TextField priceRange = new TextField(50); 
 	    panel.add(priceRange); 
 	    
+	    JLabel enterType = new JLabel("<HTML>Enter the type of listing you want to have(e.g. \"house\"): <HTML>"); 
+	    panel.add(enterType); 
+	    TextField type = new TextField(50); 
+	    panel.add(type); 
+	    
 	    JLabel success = new JLabel("Fill out all the neccessary info on this form to execute operation"); 
 	    panel.add(success); 
 	    
@@ -1955,7 +1970,7 @@ public class Interface {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					ResultSet rs = dao.findListingByLocation(latitude.getText(), longitude.getText(), timeWindow.getText(), distance.getText(), priceRank.getText(), amenities.getText(), priceRange.getText()); 
+					ResultSet rs = dao.findListingByLocation(latitude.getText(), longitude.getText(), timeWindow.getText(), distance.getText(), priceRank.getText(), amenities.getText(), priceRange.getText(), type.getText()); 
 					showListingQueryResultPage(rs); 
 				} catch (SQLException e1) {
 					success.setText("server error");
@@ -1981,7 +1996,7 @@ public class Interface {
 	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
 	    
 //	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
-	    JPanel panel = new JPanel(new GridLayout(0, 10)); 
+	    JPanel panel = new JPanel(new GridLayout(0, 11)); 
 	    
 	    JScrollPane scroller = new JScrollPane(panel); 
 	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -2005,6 +2020,9 @@ public class Interface {
 	    
 	    JLabel typeTitle = new JLabel("type"); 
 	    panel.add(typeTitle); 
+	    
+	    JLabel streetTitle = new JLabel("street"); 
+	    panel.add(streetTitle); 
 	    
 	    JLabel postalCodeTitle = new JLabel("postal code"); 
 	    panel.add(postalCodeTitle); 
@@ -2037,6 +2055,9 @@ public class Interface {
 			    
 			    JLabel type = new JLabel(rs.getString("ltype")); 
 			    panel.add(type); 
+			    
+			    JLabel street = new JLabel(rs.getString("street")); 
+			    panel.add(street); 
 			    
 			    JLabel postalCode = new JLabel(rs.getString("postalCode")); 
 			    panel.add(postalCode); 

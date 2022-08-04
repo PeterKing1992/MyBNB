@@ -71,7 +71,7 @@ public class MySqlDAO {
        	query = query.format(query, sin); 
        	this.st.execute(query); 
        	
-       	query = "INSERT INTO address(postalCode, street, province, city, country, apartmentSuite) VALUES('%s', '%s', '%s', '%s', '%s', %s); "; 
+       	query = "INSERT IGNORE INTO address(postalCode, street, province, city, country, apartmentSuite) VALUES('%s', '%s', '%s', '%s', '%s', %s); "; 
        	query = query.format(query, postalCode, street, province, city, country, apartmentSuite); 
        	this.st.execute(query); 
        	
@@ -93,7 +93,7 @@ public class MySqlDAO {
        	query = query.format(query, sin); 
        	this.st.execute(query); 
        	
-       	query = "INSERT INTO paymentMethod(type, cardNumber) VALUES('%s', '%s'); "; 
+       	query = "INSERT IGNORE INTO paymentMethod(type, cardNumber) VALUES('%s', '%s'); "; 
        	query = query.format(query,paymentType, cardNumber); 
        	this.st.execute(query); 
        	
@@ -275,7 +275,7 @@ public class MySqlDAO {
 		query += "'%Y-%m-%d'));"; 
 		this.st.execute(query); 
 		
-		query = "INSERT INTO address(postalCode, street, province, city, country, apartmentSuite) VALUEs('%s', '%s', '%s', '%s', '%s', %s); "; 
+		query = "INSERT IGNORE INTO address(postalCode, street, province, city, country, apartmentSuite) VALUEs('%s', '%s', '%s', '%s', '%s', %s); "; 
 		query = query.format(query, postalCode, street, province, city, country, apartmentSuite); 
 		this.st.execute(query); 
 		
@@ -283,7 +283,7 @@ public class MySqlDAO {
 		query = query.format(query, postalCode, street, province, city, country, apartmentSuite); 
 		this.st.execute(query); 
 		
-		query = "INSERT INTO location(latitude, longitude) VALUEs(%s, %s); "; 
+		query = "INSERT IGNORE INTO location(latitude, longitude) VALUEs(%s, %s); "; 
 		query = query.format(query, latitude, longitude); 
 		this.st.execute(query); 
 		
@@ -570,7 +570,7 @@ public class MySqlDAO {
 		return 0;
 	}
 
-	public ResultSet findListingByLocation(String latitude, String longitude, String timeWindow, String distance, String priceRank, String amenities, String priceRange) throws SQLException {
+	public ResultSet findListingByLocation(String latitude, String longitude, String timeWindow, String distance, String priceRank, String amenities, String priceRange, String type) throws SQLException {
 		String distanceDefault = "30"; 
 		String startDate = ""; 
 		String endDate = ""; 
@@ -586,7 +586,7 @@ public class MySqlDAO {
 			endDate = temp[1]; 
 		}
 		
-		String rankStatement = " ORDER BY SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2)) ASC"; 
+		String rankStatement = "ORDER BY SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2)) ASC"; 
 		rankStatement = rankStatement.format(rankStatement, latitude, longitude); 
 		
 		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities "
@@ -604,13 +604,14 @@ public class MySqlDAO {
 			rankStatement = "ORDER BY AVG(price) " + priceRank; 
 		}
 		
+		String priceRangeFilter = ""; 
+		
 		if(!priceRange.equals("")) {
 			String[] priceRangeArray = priceRange.split(","); 
 			String lowerBound = priceRangeArray[0]; 
 			String upperBound = priceRangeArray[1]; 
-			String priceRangeFilter = "AND (price BETWEEN %s AND %s) ";
+			priceRangeFilter = "HAVING AVG(price) BETWEEN %s AND %s ";
 			priceRangeFilter = priceRangeFilter.format(priceRangeFilter, lowerBound, upperBound); 
-			query += priceRangeFilter; 
 		}
 		
 		if(!amenities.equals("")) {
@@ -623,12 +624,18 @@ public class MySqlDAO {
 			}
 		}
 		
-		query = query + "GROUP BY lid " + rankStatement; 
+		if(!type.equals("")) {
+			String typeConstraint = "AND ltype='%s' "; 
+			typeConstraint = typeConstraint.format(typeConstraint, type); 
+			query += typeConstraint; 
+		}
+		
+		query = query + "GROUP BY lid " + priceRangeFilter + rankStatement; 
 		
 		return this.st.executeQuery(query);
 	}
 
-	public ResultSet findListingByPostalCode(String postalCode, String timeWindow, String distance, String priceRank, String amenities, String priceRange) throws SQLException {
+	public ResultSet findListingByPostalCode(String postalCode, String timeWindow, String distance, String priceRank, String amenities, String priceRange, String type) throws SQLException {
 		String distanceDefault = "300"; 
 		String startDate = ""; 
 		String endDate = ""; 
@@ -662,13 +669,13 @@ public class MySqlDAO {
 			rankStatement = "ORDER BY AVG(price) " + priceRank; 
 		}
 		
+		String priceRangeFilter = ""; 
 		if(!priceRange.equals("")) {
 			String[] priceRangeArray = priceRange.split(","); 
 			String lowerBound = priceRangeArray[0]; 
 			String upperBound = priceRangeArray[1]; 
-			String priceRangeFilter = "AND (price BETWEEN %s AND %s) ";
+			priceRangeFilter = "HAVING AVG(price) BETWEEN %s AND %s ";
 			priceRangeFilter = priceRangeFilter.format(priceRangeFilter, lowerBound, upperBound); 
-			query += priceRangeFilter; 
 		}
 		
 		if(!amenities.equals("")) {
@@ -681,13 +688,19 @@ public class MySqlDAO {
 			}
 		}
 		
-		query = query + "GROUP BY lid " + rankStatement; 
+		if(!type.equals("")) {
+			String typeConstraint = "AND ltype='%s' "; 
+			typeConstraint = typeConstraint.format(typeConstraint, type); 
+			query += typeConstraint; 
+		}
+		
+		query = query + "GROUP BY lid " + priceRangeFilter + rankStatement; 
 		
 		return this.st.executeQuery(query);
 	}
 
 	public ResultSet findListingByAddress(String postalCode, String street, String province, String city, String country, 
-		String apartmentSuite, String timeWindow, String amenities, String priceRange) throws SQLException {
+		String apartmentSuite, String timeWindow, String amenities, String priceRange, String type) throws SQLException {
 		String startDate = ""; 
 		String endDate = ""; 
 		
@@ -708,13 +721,13 @@ public class MySqlDAO {
 			query += temporalFilter; 
 		}
 		
+		String priceRangeFilter = ""; 
 		if(!priceRange.equals("")) {
 			String[] priceRangeArray = priceRange.split(","); 
 			String lowerBound = priceRangeArray[0]; 
 			String upperBound = priceRangeArray[1]; 
-			String priceRangeFilter = "AND (price BETWEEN %s AND %s) ";
+			priceRangeFilter = "HAVING AVG(price) BETWEEN %s AND %s ";
 			priceRangeFilter = priceRangeFilter.format(priceRangeFilter, lowerBound, upperBound); 
-			query += priceRangeFilter; 
 		}
 		
 		if(!amenities.equals("")) {
@@ -727,7 +740,13 @@ public class MySqlDAO {
 			}
 		}
 		
-		query = query + "GROUP BY lid "; 
+		if(!type.equals("")) {
+			String typeConstraint = "AND ltype='%s' "; 
+			typeConstraint = typeConstraint.format(typeConstraint, type); 
+			query += typeConstraint; 
+		}
+		
+		query = query + "GROUP BY lid " + priceRangeFilter; 
 		
 		return this.st.executeQuery(query);
 	}
@@ -743,15 +762,11 @@ public class MySqlDAO {
 		}
 		
 		String query = "SELECT city, count(bid) FROM bookingAssociatedWithOffering NATURAL JOIN listingOffering NATURAL JOIN listingHasAddress "
-				+ "UNION SELECT city, 0 FROM ListingHasAddress WHERE city NOT IN (SELECT city FROM bookingAssociatedWithOffering NATURAL JOIN listingHasAddress)"; 
+				+ "WHERE offeringDate between '%s' AND '%s' GROUP BY city "
+				+ "UNION SELECT city, 0 FROM ListingHasAddress WHERE city NOT IN (SELECT city FROM bookingAssociatedWithOffering NATURAL JOIN listingHasAddress) "; 
+		query = query.format(query, startDate, endDate); 
 		
-		if(!timeWindow.equals("")) {
-			String temporalFilter = "WHERE offeringDate between '%s' AND '%s' "; 
-			temporalFilter = temporalFilter.format(temporalFilter, startDate, endDate); 
-			query += temporalFilter; 
-		}
-		
-		query = query + "GROUP BY city "; 
+//		query = query + "GROUP BY city "; 
 		
 		return this.st.executeQuery(query); 
 	}
