@@ -589,8 +589,8 @@ public class MySqlDAO {
 		String rankStatement = " ORDER BY SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2)) ASC"; 
 		rankStatement = rankStatement.format(rankStatement, latitude, longitude); 
 		
-		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country "
-				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress "
+		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities "
+				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL JOIN listingOfferAmenity NATURAL JOIN amenity "
 				+ "WHERE SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2))<=%s AND isAvailable=true ";
 		query = query.format(query, latitude, longitude, distanceDefault); 
 		
@@ -647,8 +647,8 @@ public class MySqlDAO {
 		String rankStatement = " ORDER BY ABS(HEX(postalCode) - HEX('%s')) ASC"; 
 		rankStatement = rankStatement.format(rankStatement, postalCode); 
 		
-		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country "
-				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress "
+		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities "
+				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL JOIN listingOfferAmenity NATURAL JOIN amenity "
 				+ "WHERE ABS(HEX(postalCode) - HEX('%s'))<=%s AND isAvailable=true ";
 		query = query.format(query, postalCode, distanceDefault); 
 		
@@ -697,8 +697,8 @@ public class MySqlDAO {
 			endDate = temp[1]; 
 		}
 		
-		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country "
-				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress "
+		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities "
+				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL JOIN listingOfferAmenity NATURAL JOIN amenity "
 				+ "WHERE postalCode='%s' AND street='%s' AND province='%s' AND city='%s' AND country='%s' AND apartmentSuite=%s AND isAvailable=true ";
 		query = query.format(query, postalCode, street, province, city, country, apartmentSuite); 
 		
@@ -742,7 +742,8 @@ public class MySqlDAO {
 			endDate = temp[1]; 
 		}
 		
-		String query = "SELECT city, count(bid) FROM bookingAssociatedWithOffering NATURAL JOIN listingOffering NATURAL JOIN listingHasAddress "; 
+		String query = "SELECT city, count(bid) FROM bookingAssociatedWithOffering NATURAL JOIN listingOffering NATURAL JOIN listingHasAddress "
+				+ "UNION SELECT city, 0 FROM ListingHasAddress WHERE city NOT IN (SELECT city FROM bookingAssociatedWithOffering NATURAL JOIN listingHasAddress)"; 
 		
 		if(!timeWindow.equals("")) {
 			String temporalFilter = "WHERE offeringDate between '%s' AND '%s' "; 

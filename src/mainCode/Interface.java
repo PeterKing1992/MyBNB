@@ -1981,7 +1981,7 @@ public class Interface {
 	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
 	    
 //	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
-	    JPanel panel = new JPanel(new GridLayout(0, 9)); 
+	    JPanel panel = new JPanel(new GridLayout(0, 10)); 
 	    
 	    JScrollPane scroller = new JScrollPane(panel); 
 	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -2018,6 +2018,9 @@ public class Interface {
 	    JLabel countryTitle = new JLabel("country"); 
 	    panel.add(countryTitle); 
 	    
+	    JLabel amenitiesTitle = new JLabel("Amenities"); 
+	    panel.add(amenitiesTitle); 
+	    
 	    try {
 			while(rs.next()) {
 				JLabel lid = new JLabel(rs.getString("lid")); 
@@ -2046,6 +2049,9 @@ public class Interface {
 			    
 			    JLabel country = new JLabel(rs.getString("country")); 
 			    panel.add(country); 
+			    
+			    JLabel amenities = new JLabel("<HTML>" + rs.getString("amenities") + "<HTML>"); 
+			    panel.add(amenities); 
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
