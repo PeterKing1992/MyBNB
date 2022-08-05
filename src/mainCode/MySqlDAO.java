@@ -761,10 +761,10 @@ public class MySqlDAO {
 			endDate = temp[1]; 
 		}
 		
-		String query = "SELECT city, count(bid) FROM bookingAssociatedWithOffering NATURAL JOIN listingOffering NATURAL JOIN listingHasAddress "
-				+ "WHERE offeringDate between '%s' AND '%s' GROUP BY city "
-				+ "UNION SELECT city, 0 FROM ListingHasAddress WHERE city NOT IN (SELECT city FROM bookingAssociatedWithOffering NATURAL JOIN listingHasAddress) "; 
-		query = query.format(query, startDate, endDate); 
+		String query = "SELECT city, count(distinct(bid)) FROM bookingAssociatedWithOffering NATURAL JOIN listingOffering NATURAL JOIN listingHasAddress "
+				+ "WHERE (offeringDate between '%s' AND '%s') AND bid NOT IN(SELECT bid from hostCancelBooking) AND bid NOT IN (SELECT bid FROM renterCancelBooking) GROUP BY city "
+				+ "UNION SELECT city, 0 FROM ListingHasAddress WHERE city NOT IN (SELECT city FROM bookingAssociatedWithOffering NATURAL JOIN listingHasAddress WHERE (offeringDate between '%s' AND '%s') AND bid NOT IN(SELECT bid from hostCancelBooking) AND bid NOT IN (SELECT bid FROM renterCancelBooking)) "; 
+		query = query.format(query, startDate, endDate, startDate, endDate); 
 		
 //		query = query + "GROUP BY city "; 
 		
@@ -781,7 +781,7 @@ public class MySqlDAO {
 			endDate = temp[1]; 
 		}
 		
-		String query = "SELECT postalCode, count(bid) FROM bookingAssociatedWithOffering NATURAL JOIN listingOffering NATURAL JOIN listingHasAddress WHERE city='%s' "; 
+		String query = "SELECT postalCode, count(distinct(bid)) FROM bookingAssociatedWithOffering NATURAL JOIN listingOffering NATURAL JOIN listingHasAddress WHERE city='%s'AND bid NOT IN(SELECT bid from hostCancelBooking) AND bid NOT IN (SELECT bid FROM renterCancelBooking) "; 
 		query = query.format(query, city); 
 		
 		if(!timeWindow.equals("")) {
@@ -791,6 +791,9 @@ public class MySqlDAO {
 		}
 		
 		query = query + "GROUP BY postalCode "; 
+		
+		String postalCodeWithNoBooking = "UNION SELECT postalCode, 0 FROM ListingHasAddress WHERE postalCode NOT IN (SELECT postalCode FROM bookingAssociatedWithOffering NATURAL JOIN listingHasAddress WHERE (offeringDate between '%s' AND '%s') AND bid NOT IN(SELECT bid from hostCancelBooking) AND bid NOT IN (SELECT bid FROM renterCancelBooking)) "; 
+		query += postalCodeWithNoBooking; 
 		
 		return this.st.executeQuery(query); 
 	}
@@ -841,8 +844,8 @@ public class MySqlDAO {
 		endDate = temp[1]; 
 		
 		
-		String query = "SELECT SIN, uname, count(bid) FROM user NATURAL JOIN renter NATURAL JOIN renterBookBooking NATURAL JOIN bookingAssociatedWithOffering NATURAL JOIN listingHasAddress "; 
-		String temporalFilter = "WHERE offeringDate between '%s' AND '%s' "; 
+		String query = "SELECT SIN, uname, count(distinct(bid)) FROM user NATURAL JOIN renter NATURAL JOIN renterBookBooking NATURAL JOIN bookingAssociatedWithOffering NATURAL JOIN listingHasAddress "; 
+		String temporalFilter = "WHERE (offeringDate between '%s' AND '%s') AND bid NOT IN(SELECT bid from hostCancelBooking) AND bid NOT IN (SELECT bid FROM renterCancelBooking) "; 
 		temporalFilter = temporalFilter.format(temporalFilter, startDate, endDate); 
 		query += temporalFilter; 
 		

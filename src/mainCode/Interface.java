@@ -1191,7 +1191,7 @@ public class Interface {
 			    panel.add(sin); 
 			    JLabel username = new JLabel(rs.getString("uname")); 
 			    panel.add(username); 
-			    JLabel numBookings = new JLabel(rs.getString("count(bid)")); 
+			    JLabel numBookings = new JLabel(rs.getString("count(distinct(bid))")); 
 			    panel.add(numBookings); 
 			}
 		} catch (SQLException e) {
@@ -1673,7 +1673,7 @@ public class Interface {
 	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
 	    
 //	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
-	    JPanel panel = new JPanel(new GridLayout(0, 3)); 
+	    JPanel panel = new JPanel(new GridLayout(0, 2)); 
 	    
 	    JScrollPane scroller = new JScrollPane(panel); 
 	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -1682,8 +1682,8 @@ public class Interface {
 	    
 	    
 	//    lid,latitude,longitude,price, type, postalCode, apartmentSuite, city, country
-	    JLabel cityTitle = new JLabel("City"); 
-	    panel.add(cityTitle); 
+//	    JLabel cityTitle = new JLabel("City"); 
+//	    panel.add(cityTitle); 
 	    
 	    JLabel postalCodeTitle = new JLabel("Postal Code"); 
 	    panel.add(postalCodeTitle); 
@@ -1693,11 +1693,11 @@ public class Interface {
 	    
 	    try {
 			while(rs.next()) {
-				JLabel city = new JLabel(rs.getString("city")); 
-			    panel.add(city); 
+//				JLabel city = new JLabel(rs.getString("city")); 
+//			    panel.add(city); 
 				JLabel postalCode = new JLabel(rs.getString("postalCode")); 
 				panel.add(postalCode); 
-				JLabel numberOfListings = new JLabel(rs.getString("count(bid)")); 
+				JLabel numberOfListings = new JLabel(rs.getString("count(distinct(bid))")); 
 			    panel.add(numberOfListings); 
 			}
 		} catch (SQLException e) {
@@ -1774,7 +1774,7 @@ public class Interface {
 			while(rs.next()) {
 				JLabel city = new JLabel(rs.getString("city")); 
 				panel.add(city); 
-				JLabel numberOfListings = new JLabel(rs.getString("count(bid)")); 
+				JLabel numberOfListings = new JLabel(rs.getString("count(distinct(bid))")); 
 			    panel.add(numberOfListings); 
 			}
 		} catch (SQLException e) {
