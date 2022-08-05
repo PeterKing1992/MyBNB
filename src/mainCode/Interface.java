@@ -388,7 +388,7 @@ public class Interface {
 	    renterCommentOnListing.addActionListener(renterCommentOnListingListener); 
 	    panel.add(renterCommentOnListing); 
 	    
-	    JLabel findListings = new JLabel("Find Listings"); 
+	    JLabel findListings = new JLabel("Queries"); 
 	    panel.add(findListings); 
 	    
 	    JButton findListingByLocation = new JButton("Find listing by location(latitude and longitude)");
@@ -982,7 +982,7 @@ public class Interface {
 	    
 //	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
 	    
-	    JPanel panel = new JPanel(new GridLayout(0, 5)); 
+	    JPanel panel = new JPanel(new GridLayout(0, 11)); 
 	    
 	    JScrollPane scroller = new JScrollPane(panel); 
 	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -1007,6 +1007,24 @@ public class Interface {
 	    JLabel lidTitle = new JLabel("<HTML>Listing Id<HTML>"); 
 	    panel.add(lidTitle); 
 	    
+	    JLabel postalCodeTitle = new JLabel("<HTML>postal code<HTML>"); 
+	    panel.add(postalCodeTitle); 
+	    
+	    JLabel streetTitle = new JLabel("<HTML>street title<HTML>"); 
+	    panel.add(streetTitle); 
+	    
+	    JLabel apartmentSuiteTitle = new JLabel("<HTML>apartment/suite number<HTML>"); 
+	    panel.add(apartmentSuiteTitle); 
+	    
+	    JLabel cityTitle = new JLabel("<HTML>city<HTML>"); 
+	    panel.add(cityTitle); 
+	    
+	    JLabel provinceTitle = new JLabel("<HTML>Province<HTML>"); 
+	    panel.add(provinceTitle); 
+	    
+	    JLabel countryTitle = new JLabel("<HTML>Country<HTML>"); 
+	    panel.add(countryTitle); 
+	    
 	    try {
 			while(rs.next()) {
 				JLabel sin = new JLabel(rs.getString("SIN")); 
@@ -1019,6 +1037,18 @@ public class Interface {
 			    panel.add(offeringDate); 
 			    JLabel lid = new JLabel(rs.getString("lid")); 
 			    panel.add(lid); 
+			    JLabel postalCode = new JLabel(rs.getString("postalCode")); 
+			    panel.add(postalCode); 
+			    JLabel street = new JLabel(rs.getString("street")); 
+			    panel.add(street); 
+			    JLabel apartmentSuite = new JLabel(rs.getString("apartmentSuite")); 
+			    panel.add(apartmentSuite); 
+			    JLabel city = new JLabel(rs.getString("city")); 
+			    panel.add(city); 
+			    JLabel province = new JLabel(rs.getString("province")); 
+			    panel.add(province); 
+			    JLabel country = new JLabel(rs.getString("country")); 
+			    panel.add(country); 
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -2925,7 +2955,7 @@ public static void showAddAmenityPage() {
 	    TextField country = new TextField(50); 
 	    panel.add(country); 
 	    
-	    JLabel enterApartmentSuite = new JLabel("Enter apartment/suite number: "); 
+	    JLabel enterApartmentSuite = new JLabel("Enter apartment/suite number(enter \"-1\" if not applicable): "); 
 	    panel.add(enterApartmentSuite); 
 	    TextField apartmentSuite = new TextField(6); 
 	    panel.add(apartmentSuite); 

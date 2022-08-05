@@ -875,13 +875,13 @@ public class MySqlDAO {
 	}
 
 	public ResultSet findBookingByLid(String lid) throws SQLException {
-		String query = "SELECT SIN, uname, bid, offeringDate, lid FROM user NATURAL JOIN renterBookBooking NATURAL JOIN bookingAssociatedWithOffering WHERE lid=%s AND bid NOT IN (SELECT bid FROM renterCancelBooking) AND bid NOT IN (SELECT bid FROM hostCancelBooking) ORDER BY bookDate DESC"; 
+		String query = "SELECT SIN, uname, bid, offeringDate, lid, postalCode, street, apartmentSuite, city, province, country FROM user NATURAL JOIN renterBookBooking NATURAL JOIN bookingAssociatedWithOffering NATURAL JOIN listingHasAddress WHERE lid=%s AND bid NOT IN (SELECT bid FROM renterCancelBooking) AND bid NOT IN (SELECT bid FROM hostCancelBooking) ORDER BY bookDate DESC"; 
 		query = query.format(query, lid); 
 		return this.st.executeQuery(query); 
 	}
 
 	public ResultSet findBookingBySIN(String SIN) throws SQLException {
-		String query = "SELECT SIN, uname, bid, offeringDate, lid FROM user NATURAL JOIN renterBookBooking NATURAL JOIN bookingAssociatedWithOffering WHERE SIN='%s' AND bid NOT IN (SELECT bid FROM renterCancelBooking) AND bid NOT IN (SELECT bid FROM hostCancelBooking) ORDER BY bookDate DESC"; 
+		String query = "SELECT SIN, uname, bid, offeringDate, lid, postalCode, street, apartmentSuite, city, province, country FROM user NATURAL JOIN renterBookBooking NATURAL JOIN bookingAssociatedWithOffering NATURAL JOIN listingHasAddress WHERE SIN='%s' AND bid NOT IN (SELECT bid FROM renterCancelBooking) AND bid NOT IN (SELECT bid FROM hostCancelBooking) ORDER BY bookDate DESC"; 
 		query = query.format(query, SIN); 
 		return this.st.executeQuery(query); 
 	}
