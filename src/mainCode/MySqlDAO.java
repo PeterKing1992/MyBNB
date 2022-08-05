@@ -589,8 +589,8 @@ public class MySqlDAO {
 		String rankStatement = "ORDER BY SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2)) ASC"; 
 		rankStatement = rankStatement.format(rankStatement, latitude, longitude); 
 		
-		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities "
-				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL LEFT OUTER JOIN listingOfferAmenity NATURAL LEFT OUTER JOIN amenity "
+		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities, AVG(rating) "
+				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL LEFT OUTER JOIN listingOfferAmenity NATURAL LEFT OUTER JOIN amenity NATURAL LEFT OUTER JOIN renterCommentOnListing "
 				+ "WHERE SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2))<=%s AND isAvailable=true ";
 		query = query.format(query, latitude, longitude, distanceDefault); 
 		
@@ -654,8 +654,8 @@ public class MySqlDAO {
 		String rankStatement = " ORDER BY ABS(HEX(postalCode) - HEX('%s')) ASC"; 
 		rankStatement = rankStatement.format(rankStatement, postalCode); 
 		
-		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities "
-				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL LEFT OUTER JOIN listingOfferAmenity NATURAL LEFT OUTER JOIN amenity "
+		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities, AVG(rating) "
+				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL LEFT OUTER JOIN listingOfferAmenity NATURAL LEFT OUTER JOIN amenity NATURAL LEFT OUTER JOIN renterCommentOnListing "
 				+ "WHERE ABS(HEX(postalCode) - HEX('%s'))<=%s AND isAvailable=true ";
 		query = query.format(query, postalCode, distanceDefault); 
 		
@@ -710,8 +710,8 @@ public class MySqlDAO {
 			endDate = temp[1]; 
 		}
 		
-		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities "
-				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL LEFT OUTER JOIN listingOfferAmenity NATURAL LEFT OUTER JOIN amenity "
+		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities, AVG(rating) "
+				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL LEFT OUTER JOIN listingOfferAmenity NATURAL LEFT OUTER JOIN amenity NATURAL LEFT OUTER JOIN renterCommentOnListing "
 				+ "WHERE postalCode='%s' AND street='%s' AND province='%s' AND city='%s' AND country='%s' AND apartmentSuite=%s AND isAvailable=true ";
 		query = query.format(query, postalCode, street, province, city, country, apartmentSuite); 
 		

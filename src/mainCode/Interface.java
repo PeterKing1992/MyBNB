@@ -403,23 +403,23 @@ public class Interface {
 	    findListingByAddress.addActionListener(findListingByAddressListener); 
 	    panel.add(findListingByAddress); 
 	    
-	    JButton findListingBySIN = new JButton("Find listing by host");
+	    JButton findListingBySIN = new JButton("Find listing by host's SIN");
 	    findListingBySIN.addActionListener(findListingBySINListener); 
 	    panel.add(findListingBySIN); 
 	    
-	    JButton findBookingByLid = new JButton("Find booking by lid");
+	    JButton findBookingByLid = new JButton("Find booking by listing Id");
 	    findBookingByLid.addActionListener(findBookingByLidListener); 
 	    panel.add(findBookingByLid); 
 	    
-	    JButton findBookingBySIN = new JButton("Find booking by SIN");
+	    JButton findBookingBySIN = new JButton("Find booking by renter's SIN");
 	    findBookingBySIN.addActionListener(findBookingBySINListener); 
 	    panel.add(findBookingBySIN); 
 	    
-	    JButton findCommentsByLid = new JButton("Find comments by Lid");
+	    JButton findCommentsByLid = new JButton("Find comments by Listing Id");
 	    findCommentsByLid.addActionListener(findCommentsByLidListener); 
 	    panel.add(findCommentsByLid); 
 	    
-	    JButton findCOmmentsBySIN = new JButton("Find comments by SIN");
+	    JButton findCOmmentsBySIN = new JButton("Find comments by Host's SIN");
 	    findCOmmentsBySIN.addActionListener(findCommentsBySINListener); 
 	    panel.add(findCOmmentsBySIN); 
 	    
@@ -2026,7 +2026,7 @@ public class Interface {
 	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
 	    
 //	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
-	    JPanel panel = new JPanel(new GridLayout(0, 11)); 
+	    JPanel panel = new JPanel(new GridLayout(0, 12)); 
 	    
 	    JScrollPane scroller = new JScrollPane(panel); 
 	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -2066,8 +2066,12 @@ public class Interface {
 	    JLabel countryTitle = new JLabel("country"); 
 	    panel.add(countryTitle); 
 	    
+	    JLabel ratingTitle = new JLabel("Average Rating"); 
+	    panel.add(ratingTitle); 
+	    
 	    JLabel amenitiesTitle = new JLabel("Amenities"); 
 	    panel.add(amenitiesTitle); 
+	    
 	    
 	    try {
 			while(rs.next()) {
@@ -2101,8 +2105,12 @@ public class Interface {
 			    JLabel country = new JLabel(rs.getString("country")); 
 			    panel.add(country); 
 			    
+			    JLabel rating = new JLabel("<HTML>" + rs.getString("AVG(rating)") + "<HTML>"); 
+			    panel.add(rating); 
+			    
 			    JLabel amenities = new JLabel("<HTML>" + rs.getString("amenities") + "<HTML>"); 
 			    panel.add(amenities); 
+			    
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
