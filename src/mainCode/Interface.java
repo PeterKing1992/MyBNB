@@ -1407,7 +1407,7 @@ public class Interface {
 			    panel.add(sin); 
 			    JLabel username = new JLabel(rs.getString("uname")); 
 			    panel.add(username); 
-			    JLabel numListings = new JLabel(rs.getString("count(lid)")); 
+			    JLabel numListings = new JLabel(rs.getString("listingNum")); 
 			    panel.add(numListings); 
 			}
 		} catch (SQLException e) {

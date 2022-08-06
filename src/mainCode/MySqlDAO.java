@@ -815,16 +815,23 @@ public class MySqlDAO {
 	}
 
 	public ResultSet rankHostsByCountryCity(String country, String city) throws SQLException {
-		String query = "SELECT SIN, uname, count(lid) FROM user NATURAL JOIN host NATURAL JOIN hostPostListing NATURAL JOIN listingHasAddress WHERE country='%s' ";
+		String query = "SELECT SIN, uname, count(lid) as listingNum FROM user NATURAL JOIN host NATURAL JOIN hostPostListing NATURAL JOIN listingHasAddress WHERE country='%s' ";
 		query = query.format(query, country); 
+		
+		String hostsWithNoListing = "SELECT SIN, uname, 0 as listingNum FROM user NATURAL JOIN host WHERE SIN NOT IN (SELECT SIN FROM user NATURAL JOIN host NATURAL JOIN hostPostListing NATURAL JOIN listingHasAddress WHERE country='%s' "; 
+		hostsWithNoListing = hostsWithNoListing.format(hostsWithNoListing, country); 
 		
 		if(!city.equals("")) {
 			String cityConstraint = "AND city='%s' "; 
 			cityConstraint = cityConstraint.format(cityConstraint, city); 
 			query += cityConstraint; 
+			hostsWithNoListing = hostsWithNoListing + cityConstraint + ") "; 
+		}else {
+			hostsWithNoListing += ") "; 
 		}
 		
-		query += "GROUP BY SIN ORDER BY count(lid) DESC"; 
+		query += "GROUP BY SIN "; 
+		query += "UNION " + hostsWithNoListing + " ORDER BY listingNum DESC "; 
 		
 		return this.st.executeQuery(query);
 	}
