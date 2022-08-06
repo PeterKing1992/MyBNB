@@ -873,7 +873,7 @@ public class MySqlDAO {
 		
 		
 		if(!city.equals("")) {
-			query += "HAVING count(bid) >= 2 "; 
+			query += "HAVING bookingNum >= 2 "; 
 		}else {
 			query = query + " UNION " + rentersNotHavingBookings; 	
 		}
@@ -953,6 +953,7 @@ public class MySqlDAO {
 		this.st.execute(query); 
 		
 		for(String np: nps) {
+			np = np.strip().toUpperCase(); 
 //			if(!np.equals("I") && !np.equals("i")) {				
 				query = "INSERT INTO nounPhrase(phrase) VALUES('%s')"; 
 				query = query.format(query, np); 
@@ -960,7 +961,7 @@ public class MySqlDAO {
 //			}
 		}
 		
-		query = "SELECT phrase FROM nounPhrase WHERE phrase NOT LIKE 'I ' AND phrase NOT LIKE 'you ' AND phrase NOT LIKE 'we ' AND phrase NOT LIKE 'me ' AND "
+		query = "SELECT DISTINCT phrase FROM nounPhrase WHERE phrase NOT LIKE 'I ' AND phrase NOT LIKE 'you ' AND phrase NOT LIKE 'we ' AND phrase NOT LIKE 'me ' AND "
 				+ "phrase NOT LIKE 'us ' AND phrase NOT Like 'he ' AND phrase NOT LIKE 'she '"
 				+ " GROUP BY phrase ORDER BY count(nounId) DESC LIMIT 10"; 
 		ResultSet rs = this.st.executeQuery(query); 
