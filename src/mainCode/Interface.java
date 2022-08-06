@@ -1191,7 +1191,7 @@ public class Interface {
 			    panel.add(sin); 
 			    JLabel username = new JLabel(rs.getString("uname")); 
 			    panel.add(username); 
-			    JLabel numBookings = new JLabel(rs.getString("count(distinct(bid))")); 
+			    JLabel numBookings = new JLabel(rs.getString("bookingNum")); 
 			    panel.add(numBookings); 
 			}
 		} catch (SQLException e) {

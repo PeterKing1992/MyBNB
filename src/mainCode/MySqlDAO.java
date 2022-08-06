@@ -792,7 +792,8 @@ public class MySqlDAO {
 		
 		query = query + "GROUP BY postalCode "; 
 		
-		String postalCodeWithNoBooking = "UNION SELECT postalCode, 0 FROM ListingHasAddress WHERE postalCode NOT IN (SELECT postalCode FROM bookingAssociatedWithOffering NATURAL JOIN listingHasAddress WHERE (offeringDate between '%s' AND '%s') AND bid NOT IN(SELECT bid from hostCancelBooking) AND bid NOT IN (SELECT bid FROM renterCancelBooking)) "; 
+		String postalCodeWithNoBooking = "UNION SELECT postalCode, 0 FROM ListingHasAddress WHERE postalCode NOT IN (SELECT postalCode FROM bookingAssociatedWithOffering NATURAL JOIN listingHasAddress WHERE (offeringDate between '%s' AND '%s') AND bid NOT IN(SELECT bid from hostCancelBooking) AND bid NOT IN (SELECT bid FROM renterCancelBooking)) and city='%s' "; 
+		postalCodeWithNoBooking = postalCodeWithNoBooking.format(postalCodeWithNoBooking, startDate, endDate, city); 
 		query += postalCodeWithNoBooking; 
 		
 		return this.st.executeQuery(query); 
@@ -844,10 +845,14 @@ public class MySqlDAO {
 		endDate = temp[1]; 
 		
 		
-		String query = "SELECT SIN, uname, count(distinct(bid)) FROM user NATURAL JOIN renter NATURAL JOIN renterBookBooking NATURAL JOIN bookingAssociatedWithOffering NATURAL JOIN listingHasAddress "; 
+		String query = "SELECT SIN, uname, count(distinct(bid)) as bookingNum FROM user NATURAL JOIN renter NATURAL JOIN renterBookBooking NATURAL JOIN bookingAssociatedWithOffering NATURAL JOIN listingHasAddress "; 
 		String temporalFilter = "WHERE (offeringDate between '%s' AND '%s') AND bid NOT IN(SELECT bid from hostCancelBooking) AND bid NOT IN (SELECT bid FROM renterCancelBooking) "; 
 		temporalFilter = temporalFilter.format(temporalFilter, startDate, endDate); 
 		query += temporalFilter; 
+		
+		String rentersNotHavingBookings = "SELECT SIN, uname, 0 as bookingNum FROM user NATURAL JOIN renter WHERE SIN NOT IN (SELECT SIN FROM user NATURAL JOIN renter NATURAL JOIN renterBookBooking NATURAL JOIN bookingAssociatedWithOffering NATURAL JOIN listingHasAddress "
+				+ "WHERE (offeringDate between '%s' AND '%s') AND bid NOT IN(SELECT bid from hostCancelBooking) AND bid NOT IN (SELECT bid FROM renterCancelBooking)) "; 
+		rentersNotHavingBookings = rentersNotHavingBookings.format(rentersNotHavingBookings, startDate, endDate); 
 		
 		if(!city.equals("")) {
 			String cityConstraint = "AND city='%s' "; 
@@ -856,13 +861,17 @@ public class MySqlDAO {
 		}
 		
 		
+		
 		query = query + "GROUP BY SIN "; 
+		
 		
 		if(!city.equals("")) {
 			query += "HAVING count(bid) >= 2 "; 
+		}else {
+			query = query + " UNION " + rentersNotHavingBookings; 	
 		}
 		
-		query += "ORDER BY count(bid) DESC "; 
+		query += "ORDER BY bookingNum DESC "; 
 		
 		return this.st.executeQuery(query); 
 	}
