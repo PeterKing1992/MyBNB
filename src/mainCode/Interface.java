@@ -1561,7 +1561,7 @@ public class Interface {
 	    JLabel cityTitle = new JLabel("city"); 
 	    panel.add(cityTitle); 
 	    
-	    JLabel numberOfListingsTitle = new JLabel("Number of Bookings"); 
+	    JLabel numberOfListingsTitle = new JLabel("Number of Listings"); 
 	    panel.add(numberOfListingsTitle); 
 	    
 	    try {
@@ -2026,7 +2026,7 @@ public class Interface {
 	    JPanel mainPanel = new JPanel(new GridLayout(0, 1)); 
 	    
 //	    GridLayout gridLayout = new GridLayout(0, 9, 0, 0); 
-	    JPanel panel = new JPanel(new GridLayout(0, 12)); 
+	    JPanel panel = new JPanel(new GridLayout(0, 13)); 
 	    
 	    JScrollPane scroller = new JScrollPane(panel); 
 	    scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -2038,6 +2038,9 @@ public class Interface {
 	    
 	    JLabel lidTitle = new JLabel("lid"); 
 	    panel.add(lidTitle); 
+	    
+	    JLabel sinTitle = new JLabel("Host's SIN"); 
+	    panel.add(sinTitle); 
 	    
 	    JLabel latitudeTitle = new JLabel("latitude"); 
 	    panel.add(latitudeTitle); 
@@ -2077,6 +2080,9 @@ public class Interface {
 			while(rs.next()) {
 				JLabel lid = new JLabel(rs.getString("lid")); 
 			    panel.add(lid); 
+			    
+			    JLabel SIN = new JLabel(rs.getString("SIN")); 
+			    panel.add(SIN); 
 				
 			    JLabel latitude = new JLabel(rs.getString("latitude")); 
 			    panel.add(latitude); 

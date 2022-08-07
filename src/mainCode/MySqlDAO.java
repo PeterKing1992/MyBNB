@@ -75,7 +75,7 @@ public class MySqlDAO {
        	query = query.format(query, postalCode, street, province, city, country, apartmentSuite); 
        	this.st.execute(query); 
        	
-       	query = "INSERT INTO userHasAddress(SIN, postalCode, street, province, city, country, apartmentSuite) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %s); "; 
+       	query = "INSERT IGNORE INTO userHasAddress(SIN, postalCode, street, province, city, country, apartmentSuite) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %s); "; 
        	query = query.format(query, sin, postalCode, street, province, city, country, apartmentSuite); 
        	this.st.execute(query); 
        	
@@ -105,7 +105,7 @@ public class MySqlDAO {
        	query = query.format(query, postalCode, street, province, city, country, apartmentSuite); 
        	this.st.execute(query); 
        	
-       	query = "INSERT INTO userHasAddress(SIN, postalCode, street, province, city, country, apartmentSuite) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %s); "; 
+       	query = "INSERT IGNORE INTO userHasAddress(SIN, postalCode, street, province, city, country, apartmentSuite) VALUES('%s', '%s', '%s', '%s', '%s', '%s', %s); "; 
        	query = query.format(query, sin, postalCode, street, province, city, country, apartmentSuite); 
        	this.st.execute(query); 
        	
@@ -241,27 +241,38 @@ public class MySqlDAO {
     }
 
 	public boolean deleteUser(String sin) {
-		String query = "DELETE FROM paymentMethod WHERE (type, cardNumber) IN (select type, cardNumber from renterHasPaymentMethod WHERE SIN = '%s')"; 
+		String query = "DELETE FROM paymentMethod WHERE (type, cardNumber) IN (select type, cardNumber from hasPaymentMethod WHERE SIN = '%s')"; 
 		query = query.format(query, sin); 
 		try {
 			this.st.execute(query);
 			
 			query = "DELETE FROM listing WHERE (lid) IN (select lid from hostPostListing WHERE SIN = '%s'); "; 
 			query = query.format(query, sin); 
+			this.st.execute(query);
 			
 			query = "DELETE FROM booking WHERE (bid) IN (select bid from renterBookBooking WHERE SIN = '%s'); "; 
 			query = query.format(query, sin);
+			this.st.execute(query);
 			
 			query = "DELETE FROM address WHERE (postalCode, street, province, city, country, apartmentSuite) IN (select postalCode, street, province, city, country, apartmentSuite "
 					+ "from userHasAddress WHERE SIN = '%s'); "; 
 			query = query.format(query, sin);
+			this.st.execute(query);
 			
 			query = "DELETE FROM booking WHERE (bid) IN (select bid from renterCancelBooking WHERE SIN = '%s'); "; 
 			query = query.format(query, sin);
+			this.st.execute(query);
 			
 			query = "DELETE FROM booking WHERE (bid) IN (select bid from hostCancelBooking WHERE SIN = '%s'); "; 
 			query = query.format(query, sin);
+			this.st.execute(query);
+			
+			query = "DELETE FROM user where SIN = '%s'; "; 
+			query = query.format(query, sin);
+			this.st.execute(query);
+			
 		} catch (SQLException e) {
+			e.printStackTrace();
 			return false; 
 		} 
 		return true;
@@ -592,8 +603,8 @@ public class MySqlDAO {
 		String rankStatement = "ORDER BY SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2)) ASC"; 
 		rankStatement = rankStatement.format(rankStatement, latitude, longitude); 
 		
-		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities, AVG(rating) "
-				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL LEFT OUTER JOIN listingOfferAmenity NATURAL LEFT OUTER JOIN amenity NATURAL LEFT OUTER JOIN renterCommentOnListing "
+		String query = "SELECT lid,SIN,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities, AVG(rating) "
+				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL JOIN hostPostListing NATURAL LEFT OUTER JOIN listingOfferAmenity NATURAL LEFT OUTER JOIN amenity NATURAL LEFT OUTER JOIN renterCommentOnListing "
 				+ "WHERE SQRT(POWER((latitude-%s), 2) + POWER((longitude-%s), 2))<=%s AND isAvailable=true ";
 		query = query.format(query, latitude, longitude, distanceDefault); 
 		
@@ -657,8 +668,8 @@ public class MySqlDAO {
 		String rankStatement = " ORDER BY ABS(HEX(postalCode) - HEX('%s')) ASC"; 
 		rankStatement = rankStatement.format(rankStatement, postalCode); 
 		
-		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities, AVG(rating) "
-				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL LEFT OUTER JOIN listingOfferAmenity NATURAL LEFT OUTER JOIN amenity NATURAL LEFT OUTER JOIN renterCommentOnListing "
+		String query = "SELECT lid,SIN,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities, AVG(rating) "
+				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL JOIN hostPostListing NATURAL LEFT OUTER JOIN listingOfferAmenity NATURAL LEFT OUTER JOIN amenity NATURAL LEFT OUTER JOIN renterCommentOnListing "
 				+ "WHERE ABS(HEX(postalCode) - HEX('%s'))<=%s AND isAvailable=true ";
 		query = query.format(query, postalCode, distanceDefault); 
 		
@@ -713,8 +724,8 @@ public class MySqlDAO {
 			endDate = temp[1]; 
 		}
 		
-		String query = "SELECT lid,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities, AVG(rating) "
-				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL LEFT OUTER JOIN listingOfferAmenity NATURAL LEFT OUTER JOIN amenity NATURAL LEFT OUTER JOIN renterCommentOnListing "
+		String query = "SELECT lid,SIN,latitude,longitude,AVG(price), ltype, postalCode, street, apartmentSuite, province, city, country, GROUP_CONCAT(DISTINCT amenityDescription) AS amenities, AVG(rating) "
+				+ "FROM listingOffering NATURAL JOIN listingAtLocation NATURAL JOIN listing NATURAL JOIN listingHasAddress NATURAL JOIN hostPostListing NATURAL LEFT OUTER JOIN listingOfferAmenity NATURAL LEFT OUTER JOIN amenity NATURAL LEFT OUTER JOIN renterCommentOnListing "
 				+ "WHERE postalCode='%s' AND street='%s' AND province='%s' AND city='%s' AND country='%s' AND apartmentSuite=%s AND isAvailable=true ";
 		query = query.format(query, postalCode, street, province, city, country, apartmentSuite); 
 		
