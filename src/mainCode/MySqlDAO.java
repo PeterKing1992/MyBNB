@@ -237,6 +237,60 @@ public class MySqlDAO {
     			+ "); "; 
     	this.st.execute(query); 
     	
+    	//INSERT Amenities
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Hair Dryer')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Shampoo')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Conditioner')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Body Soap')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Bidet')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Hot Water')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Washer')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Hangers')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('TV')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Sound System')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Suitable For Events')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Air Conditioning')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Heating')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Smoke Alarm')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Fire Extinguisher')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Wifi')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Kitchen')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Refrigerator')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Microwave')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('freezer')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Stove')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Oven')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Free Parking')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Toaster')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('Dining Table')"; 
+    	this.st.execute(query); 
+    	query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('BBQ utilities')"; 
+    	this.st.execute(query); 
+    	
     	System.out.println("Created Database");
     }
 
@@ -315,9 +369,9 @@ public class MySqlDAO {
 		if(!rs.next()) {
 			return 1; 
 		}
-		query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('%s'); "; 
-		query = query.format(query, amenityDescription);  
-		this.st.execute(query);
+//		query = "INSERT IGNORE INTO amenity(amenityDescription) VALUES('%s'); "; 
+//		query = query.format(query, amenityDescription);  
+//		this.st.execute(query);
 		
 		query = "INSERT INTO listingOfferAmenity(lid, amenityDescription) VALUES(%s, '%s'); "; 
 		query = query.format(query, lid, amenityDescription);  

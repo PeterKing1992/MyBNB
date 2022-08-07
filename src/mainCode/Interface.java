@@ -1832,7 +1832,7 @@ public class Interface {
 	    TextField timeWindow = new TextField(50); 
 	    panel.add(timeWindow); 
 	    
-	    JLabel enterAmenities = new JLabel("<HTML>Enter the amenities you would like the listing to have(separate each amenity by comma E.g. \"swimming pool,large house,beach\") leave empty if you do not want to use this option: <HTML>"); 
+	    JLabel enterAmenities = new JLabel("<HTML>Enter the amenities you would like the listing to have(separate each amenity by comma E.g. \"BBQ Utilities,Wifi\") leave empty if you do not want to use this option: <HTML>"); 
 	    panel.add(enterAmenities); 
 	    TextField amenities = new TextField(100); 
 	    panel.add(amenities); 
@@ -1902,7 +1902,7 @@ public class Interface {
 	    TextField priceRank = new TextField(50); 
 	    panel.add(priceRank); 
 	    
-	    JLabel enterAmenities = new JLabel("<HTML>Enter the amenities you would like the listing to have(separate each amenity by comma E.g. \"swimming pool,large house,beach\") leave empty if you do not want to use this option: <HTML>"); 
+	    JLabel enterAmenities = new JLabel("<HTML>Enter the amenities you would like the listing to have(separate each amenity by comma E.g. \"BBQ Utilities,Wifi\") leave empty if you do not want to use this option: <HTML>"); 
 	    panel.add(enterAmenities); 
 	    TextField amenities = new TextField(100); 
 	    panel.add(amenities); 
@@ -1977,7 +1977,7 @@ public class Interface {
 	    TextField priceRank = new TextField(50); 
 	    panel.add(priceRank); 
 	    
-	    JLabel enterAmenities = new JLabel("<HTML>Enter the amenities you would like the listing to have(separate each amenity by comma E.g. \"swimming pool,large house,beach\") leave empty if you do not want to use this option: <HTML>"); 
+	    JLabel enterAmenities = new JLabel("<HTML>Enter the amenities you would like the listing to have(separate each amenity by comma E.g. \"BBQ Utilities,wifi,lake view\") leave empty if you do not want to use this option: <HTML>"); 
 	    panel.add(enterAmenities); 
 	    TextField amenities = new TextField(100); 
 	    panel.add(amenities); 
