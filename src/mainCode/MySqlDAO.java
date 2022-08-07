@@ -63,7 +63,7 @@ public class MySqlDAO {
     public boolean postUser(String sin, String occupation, String uname, String password, String bday, String city, String country, String postalCode, String street, String province, String apartmentSuite) throws SQLException, ParseException {
         if(!isAdult(bday)) return false; 
     	
-    	String query = "INSERT INTO user(SIN, uoccupation, uname, password, birthday) VALUES('%s', '%s', '%s', '%s', STR_TO_DATE('%s', "; 
+    	String query = "INSERT IGNORE INTO user(SIN, uoccupation, uname, password, birthday) VALUES('%s', '%s', '%s', '%s', STR_TO_DATE('%s', "; 
         query = query.format(query, sin, occupation, uname, password, bday); 
         query+= "'%Y-%m-%d')); "; 
         this.st.execute(query); 
@@ -85,7 +85,7 @@ public class MySqlDAO {
     public boolean postUser(String sin, String occupation, String uname, String password, String bday, String paymentType, String cardNumber, String city, String country, String postalCode, String street, String province, String apartmentSuite) throws SQLException, ParseException {
         if(!isAdult(bday)) return false; 
     	
-    	String query = "INSERT INTO user(SIN, uoccupation, uname, password, birthday) VALUES('%s', '%s', '%s', '%s', STR_TO_DATE('%s', "; 
+    	String query = "INSERT IGNORE INTO user(SIN, uoccupation, uname, password, birthday) VALUES('%s', '%s', '%s', '%s', STR_TO_DATE('%s', "; 
     	query = query.format(query, sin, occupation, uname, password, bday); 
     	query+= "'%Y-%m-%d')); "; 
         this.st.execute(query); 
@@ -143,7 +143,6 @@ public class MySqlDAO {
     	
     	query = "CREATE TABLE IF NOT EXISTS userHasAddress(SIN char(9) PRIMARY KEY, postalCode char(6) NOT NULL, street varchar(50) NOT NULL, province varchar(50) not null, city varchar(50) NOT NULL, country varchar(50) NOT NULL, apartmentSuite INT, "
     			+ "FOREIGN KEY(postalCode, street, province, city, country, apartmentSuite) REFERENCES address(postalCode, street, province, city, country, apartmentSuite) ON DELETE CASCADE, "
-    			+ "UNIQUE(postalCode, street, province, city, country, apartmentSuite), "
     			+ "FOREIGN KEY(SIN) REFERENCES user(SIN) ON DELETE CASCADE); "; 
     	this.st.execute(query); 
     	
@@ -159,6 +158,7 @@ public class MySqlDAO {
     	query = "CREATE TABLE IF NOT EXISTS listingHasAddress(lid INT, city varchar(50), country varchar(50), postalCode char(6), street varchar(50), province varchar(50), apartmentSuite INT, "
     			+ "FOREIGN KEY(lid) REFERENCES listing(lid) ON DELETE CASCADE, "
     			+ "FOREIGN KEY(postalCode, street, province, city, country, apartmentSuite) REFERENCES address(postalCode, street, province, city, country, apartmentSuite) ON DELETE CASCADE, "
+    			+ "UNIQUE(postalCode, street, province, city, country, apartmentSuite), "
     			+ "PRIMARY KEY(lid)); "; 
     	this.st.execute(query); 
     	
@@ -169,7 +169,6 @@ public class MySqlDAO {
     	query = "CREATE TABLE IF NOT EXISTS listingAtLocation(lid INT, latitude double, longitude double, "
     			+ "FOREIGN KEY(lid) REFERENCES listing(lid) ON DELETE CASCADE, "
     			+ "FOREIGN KEY(latitude, longitude) REFERENCES location(latitude, longitude) ON DELETE CASCADE, "
-    			+ "UNIQUE(latitude, longitude), "
     			+ "PRIMARY KEY(lid)); "; 
     	this.st.execute(query); 
     	
@@ -214,24 +213,28 @@ public class MySqlDAO {
     			+ "PRIMARY KEY(bid)); "; 
     	this.st.execute(query); 
     	
-    	query = "CREATE TABLE IF NOT EXISTS renterCommentOnHost(commentId INT AUTO_INCREMENT PRIMARY KEY, renter char(9) NOT NULL, host char(9) NOT NULL, commentDate date NOT NULL, "
+    	query = "CREATE TABLE IF NOT EXISTS renterCommentOnHost(renter char(9) NOT NULL, host char(9) NOT NULL, commentDate date NOT NULL, "
     			+ "rating DOUBLE NOT NULL, content TEXT NOT NULL, "
     			+ "FOREIGN KEY(renter) REFERENCES renter(SIN) ON DELETE CASCADE, "
-    			+ "FOREIGN KEY(host) REFERENCES host(SIN) ON DELETE CASCADE "
+    			+ "FOREIGN KEY(host) REFERENCES host(SIN) ON DELETE CASCADE, "
+    			+ "PRIMARY KEY(renter, host) "
     			+ "); "; 
     	this.st.execute(query); 
     	
-    	query = "CREATE TABLE IF NOT EXISTS hostCommentOnRenter(commentId INT AUTO_INCREMENT PRIMARY KEY, host char(9) NOT NULL, renter char(9) NOT NULL, commentDate DATE NOT NULL, "
+    	query = "CREATE TABLE IF NOT EXISTS hostCommentOnRenter(host char(9) NOT NULL, renter char(9) NOT NULL, commentDate DATE NOT NULL, "
     			+ "rating DOUBLE NOT NULL, content TEXT NOT NULL, "
     			+ "FOREIGN KEY(renter) REFERENCES renter(SIN) ON DELETE CASCADE, "
-    			+ "FOREIGN KEY(host) REFERENCES host(SIN) ON DELETE CASCADE "
+    			+ "FOREIGN KEY(host) REFERENCES host(SIN) ON DELETE CASCADE, "
+    			+ "PRIMARY KEY(host, renter) "
     			+ "); "; 
     	this.st.execute(query); 
     	
-    	query = "CREATE TABLE IF NOT EXISTS renterCommentOnListing(commentId INT AUTO_INCREMENT primary key, renter char(9) NOT NULL, lid INT NOT NULL, commentDate DATE NOT NULL, "
+    	query = "CREATE TABLE IF NOT EXISTS renterCommentOnListing(renter char(9) NOT NULL, lid INT NOT NULL, commentDate DATE NOT NULL, "
     			+ "rating DOUBLE NOT NULL, content TEXT NOT NULL, "
     			+ "FOREIGN KEY(renter) REFERENCES renter(SIN) ON DELETE CASCADE, "
-    			+ "FOREIGN KEY(lid) REFERENCES listing(lid) ON DELETE CASCADE ); "; 
+    			+ "FOREIGN KEY(lid) REFERENCES listing(lid) ON DELETE CASCADE, "
+    			+ "PRIMARY KEY(renter, lid) "
+    			+ "); "; 
     	this.st.execute(query); 
     	
     	System.out.println("Created Database");
